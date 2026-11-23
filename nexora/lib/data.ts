@@ -262,3 +262,13 @@ export async function getConversation(
 
   return { id: conversationId, peer: peer as Profile, messages: (messages ?? []) as Message[] };
 }
+
+export async function getAllAchievements(): Promise<Achievement[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("achievements")
+    .select("slug, name, description, xp_reward")
+    .order("xp_reward", { ascending: true });
+  if (error) throw new Error(`Failed to load achievements: ${error.message}`);
+  return (data ?? []) as Achievement[];
+}

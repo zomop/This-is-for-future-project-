@@ -24,6 +24,7 @@ import {
 import { cn } from "@/lib/utils";
 import { levelProgress } from "@/lib/level";
 import { signOutAction } from "@/lib/actions/auth";
+import { UnreadBadge } from "@/components/unread-badge";
 import type { Profile } from "@/lib/types";
 
 const NAV = [
@@ -122,6 +123,7 @@ export function AppShell({
                     className={active ? "text-accent" : "text-muted group-hover:text-foreground"}
                   />
                   <span className="flex-1">{item.label}</span>
+                  {item.href === "/messages" && <UnreadBadge meId={profile.id} />}
                   {item.phase > 0 && (
                     <span className="rounded-md border border-line bg-panel2 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-muted">
                       P{item.phase}
