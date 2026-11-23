@@ -303,3 +303,89 @@ export async function getGlobalMessages(limit = 120): Promise<GlobalMessageWithS
   }
   return messages.map((m) => ({ ...m, sender: senderById.get(m.sender_id) ?? null }));
 }
+
+// ============ Home feed ============
+
+const FEED_PROFILE_COLS = PROFILE_COLS;
+
+/** Newest realm members (non-private), for the home feed. */
+export async function getNewestMembers(limit = 6): Promise<Profile[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("profiles")
+    .select(FEED_PROFILE_COLS)
+    .neq("privacy", "private")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) throw new Error(`Failed to load newest members: ${error.message}`);
+  return (data ?? []) as Profile[];
+}
+
+export interface RealmUnlock {
+  earned_at: string;
+  achievementSlug: string;
+  achievementName: string;
+  xpReward: number;
+  /** Null when the earner's profile is hidden by privacy. */
+  profile: Profile | null;
+}
+
+/** Latest achievements unlocked anywhere in the realm (public feed). */
+export async function getRealmAchievements(limit = 6): Promise<RealmUnlock[]> {
+  const supabase = await createClient();
+  const { data: rows, error } = await supabase
+    .from("user_achievements")
+    .select("user_id, earned_at, achievement:achievements(slug, name, xp_reward)")
+    .order("earned_at", { ascending: false })
+    .limit(limit * 3); // some rows may be filtered out by privacy below
+  if (error) throw new Error(`Failed to load realm achievements: ${error.message}`);
+
+  type Row = {
+    user_id: string;
+    earned_at: string;
+    achievement: { slug: string; name: string; xp_reward: number } | null;
+  };
+  const parsed = ((rows ?? []) as unknown as Row[]).filter((r) => r.achievement);
+
+  const ids = [...new Set(parsed.map((r) => r.user_id))];
+  let profileById = new Map<string, Profile>();
+  if (ids.length > 0) {
+    const { data: profs } = await supabase
+      .from("profiles")
+      .select(FEED_PROFILE_COLS)
+      .in("id", ids)
+      .neq("privacy", "private");
+    profileById = new Map((profs ?? []).map((p) => [p.id as string, p as Profile]));
+  }
+
+  const unlocks: RealmUnlock[] = [];
+  for (const r of parsed) {
+    const profile = profileById.get(r.user_id) ?? null;
+    if (!profile) continue; // private earner — skip rather than leak
+    unlocks.push({
+      earned_at: r.earned_at,
+      achievementSlug: r.achievement!.slug,
+      achievementName: r.achievement!.name,
+      xpReward: r.achievement!.xp_reward,
+      profile,
+    });
+    if (unlocks.length >= limit) break;
+  }
+  return unlocks;
+}
+
+/** Staff roster (moderator+), shown in the global chat rail. */
+export async function getStaffMembers(limit = 8): Promise<Profile[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("profiles")
+    .select(FEED_PROFILE_COLS)
+    .in("role", ["owner", "admin", "moderator"])
+    .order("created_at", { ascending: true })
+    .limit(limit);
+  if (error) throw new Error(`Failed to load staff: ${error.message}`);
+  const rank = { owner: 0, admin: 1, moderator: 2 } as const;
+  return ((data ?? []) as Profile[]).sort(
+    (a, b) => rank[a.role as keyof typeof rank] - rank[b.role as keyof typeof rank]
+  );
+}
