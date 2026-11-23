@@ -42,7 +42,11 @@ export async function signUpAction(
   });
   if (error) {
     if (error.message.toLowerCase().includes("already")) {
-      return { error: "An account with this email already exists." };
+      // Anti-enumeration: never confirm whether an email is registered.
+      return {
+        notice:
+          "If this email can be used, a confirmation is on its way — check your inbox. Already registered? Sign in instead.",
+      };
     }
     return { error: error.message };
   }

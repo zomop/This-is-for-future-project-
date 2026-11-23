@@ -65,6 +65,9 @@ export type AvatarPath = (typeof AVATARS)[number];
 
 export type FriendStatus = "pending" | "accepted" | "declined" | "blocked";
 
+/** How the viewer relates to another traveler (Discover / people search). */
+export type PersonRelation = "friend" | "requested" | "incoming" | "none";
+
 export interface Friendship {
   id: string;
   requester_id: string;
