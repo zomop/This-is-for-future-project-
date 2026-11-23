@@ -17,6 +17,7 @@ export interface Profile {
   avatar_url: string;
   banner_url: string;
   frame_slug: string;
+  accent_theme: string;
   privacy: Privacy;
   role: AppRole;
   xp: number;

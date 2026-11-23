@@ -226,9 +226,35 @@ body {
   50% { opacity: 0.18; }
   100% { transform: translateY(32px); opacity: 0.5; }
 }
+@keyframes pix-sway {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+@keyframes pix-fall {
+  from { transform: translate(0, -10px); }
+  to { transform: translate(-16px, 110px); }
+}
+@keyframes pix-rain {
+  from { transform: translateY(-24px); }
+  to { transform: translateY(112px); }
+}
+@keyframes pix-flash {
+  0%, 88%, 100% { opacity: 0; }
+  91%, 93% { opacity: 0.7; }
+}
+@keyframes pix-sail {
+  from { transform: translateX(-48px); }
+  to { transform: translateX(344px); }
+}
+@keyframes pix-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
 
 .pix-drift { animation: pix-drift 9s ease-in-out infinite; }
 .pix-drift-slow { animation: pix-drift 14s ease-in-out infinite; }
+.pix-drift-fast { animation: pix-drift 4.5s ease-in-out infinite; }
+.pix-drift-mid { animation: pix-drift 7s ease-in-out 1.2s infinite; }
 .pix-wave { animation: pix-wave 3.2s linear infinite; }
 .pix-wave-slow { animation: pix-wave 5.5s linear infinite; }
 .pix-twinkle { animation: pix-twinkle 2.4s ease-in-out infinite; }
@@ -246,12 +272,31 @@ body {
   animation: pix-spin 3.2s linear infinite;
 }
 .pix-scan { animation: pix-scan 2.4s ease-in-out infinite; }
+.pix-sway {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: pix-sway 2.8s ease-in-out infinite;
+}
+.pix-fall { animation: pix-fall 7s linear infinite; }
+.pix-fall-2 { animation: pix-fall 9s linear 2.2s infinite; }
+.pix-fall-3 { animation: pix-fall 8s linear 4s infinite; }
+.pix-rain { animation: pix-rain 0.9s linear infinite; }
+.pix-rain-2 { animation: pix-rain 1.1s linear 0.35s infinite; }
+.pix-rain-3 { animation: pix-rain 0.8s linear 0.6s infinite; }
+.pix-flash { animation: pix-flash 5.5s linear infinite; }
+.pix-sail { animation: pix-sail 26s linear infinite; }
+.pix-sail-slow { animation: pix-sail 40s linear 8s infinite; }
+.pix-pulse { animation: pix-pulse 3.2s ease-in-out infinite; }
 
 @media (prefers-reduced-motion: reduce) {
-  .pix-drift, .pix-drift-slow, .pix-wave, .pix-wave-slow,
+  .pix-drift, .pix-drift-slow, .pix-drift-fast, .pix-drift-mid,
+  .pix-wave, .pix-wave-slow,
   .pix-twinkle, .pix-twinkle-2, .pix-twinkle-3,
   .pix-blink, .pix-blink-2, .pix-bounce, .pix-fly, .pix-fly-slow,
-  .pix-shimmer, .pix-spin, .pix-scan {
+  .pix-shimmer, .pix-spin, .pix-scan,
+  .pix-sway, .pix-fall, .pix-fall-2, .pix-fall-3,
+  .pix-rain, .pix-rain-2, .pix-rain-3, .pix-flash,
+  .pix-sail, .pix-sail-slow, .pix-pulse {
     animation: none;
   }
 }

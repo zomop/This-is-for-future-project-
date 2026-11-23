@@ -4,6 +4,9 @@ import { AppShell } from "@/components/app-shell";
 import { SignOutForm } from "./signout-form";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { RoleBadge } from "@/components/ui/badge";
+import { AccentPicker } from "@/components/accent-picker";
+import { BannerPicker } from "@/components/banner-picker";
+import { FramePicker } from "@/components/frame-picker";
 import { ChevronRight, ShieldCheck } from "lucide-react";
 
 export const metadata = { title: "Settings" };
@@ -18,7 +21,7 @@ export default async function SettingsPage() {
       <div className="mb-5">
         <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-accent">Settings</p>
         <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-foreground">
-          Account &amp; session
+          Account, design &amp; session
         </h1>
       </div>
 
@@ -38,6 +41,28 @@ export default async function SettingsPage() {
             <Link href="/profile" className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:underline">
               Edit name, avatar, bio and privacy <ChevronRight size={15} />
             </Link>
+          </div>
+        </Card>
+
+        {/* ——— design center: everything visual, one tap to apply ——— */}
+        <Card>
+          <CardHeader><CardTitle>Accent color</CardTitle></CardHeader>
+          <div className="px-6 py-5">
+            <AccentPicker current={profile.accent_theme} />
+          </div>
+        </Card>
+
+        <Card>
+          <CardHeader><CardTitle>Profile banner</CardTitle></CardHeader>
+          <div className="px-6 py-5">
+            <BannerPicker current={profile.banner_url} />
+          </div>
+        </Card>
+
+        <Card>
+          <CardHeader><CardTitle>Profile frame</CardTitle></CardHeader>
+          <div className="px-6 py-5">
+            <FramePicker profile={profile} />
           </div>
         </Card>
 

@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { levelProgress } from "@/lib/level";
+import { getAccent } from "@/lib/design";
 import { signOutAction } from "@/lib/actions/auth";
 import { UnreadBadge } from "@/components/unread-badge";
 import { FramedAvatar } from "@/components/framed-avatar";
@@ -85,6 +86,7 @@ export function AppShell({
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const lp = levelProgress(profile.xp);
+  const accent = getAccent(profile.accent_theme);
   const isStaff = ["admin", "owner", "moderator"].includes(profile.role);
 
   const items = [
@@ -196,7 +198,15 @@ export function AppShell({
   );
 
   return (
-    <div className="min-h-screen">
+    <div
+      className="min-h-screen"
+      style={
+        {
+          "--color-accent": accent.accent,
+          "--color-accentdim": accent.accentdim,
+        } as React.CSSProperties
+      }
+    >
       {/* mobile top bar */}
       <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-line bg-graphite/85 px-4 backdrop-blur-md md:hidden">
         <Logo />
