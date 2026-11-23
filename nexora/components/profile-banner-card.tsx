@@ -1,11 +1,13 @@
 import Image from "next/image";
 import { Coins, CalendarDays, Flame } from "lucide-react";
 import { FramedAvatar } from "@/components/framed-avatar";
+import { PixelBanner } from "@/components/pixel-banner";
 import { cn } from "@/lib/utils";
 import { levelProgress } from "@/lib/level";
 import { RoleBadge } from "@/components/ui/badge";
 import { memberMonths } from "@/lib/data";
-import type { Profile } from "@/lib/types";
+import { BANNER_VARIANTS } from "@/lib/validations";
+import type { BannerVariant, Profile } from "@/lib/types";
 
 /**
  * The NEXORA profile showcase card — banner, overlapping avatar, level pill,
@@ -27,10 +29,20 @@ export function ProfileBannerCard({
     year: "numeric",
   });
 
+  // `pix:<variant>` banners are animated pixel scenes; anything else is a
+  // static preset image.
+  const pixCandidate = profile.banner_url.startsWith("pix:")
+    ? profile.banner_url.slice(4)
+    : null;
+  const pixVariant: BannerVariant | null =
+    pixCandidate && (BANNER_VARIANTS as readonly string[]).includes(pixCandidate)
+      ? (pixCandidate as BannerVariant)
+      : null;
+
   const stats = [
     { label: "exp", value: profile.xp.toLocaleString() },
     { label: "achievements", value: String(achievementCount) },
-    { label: "months", value: String(months) },
+    { label: months === 1 ? "month" : "months", value: String(months) },
     { label: "coins", value: String(profile.coins) },
   ];
 
@@ -41,14 +53,21 @@ export function ProfileBannerCard({
     >
       {/* banner */}
       <div className="relative h-40 sm:h-48">
-        <Image
-          src={profile.banner_url}
-          alt="Profile banner artwork"
-          fill
-          sizes="(max-width: 768px) 100vw, 960px"
-          className="pixelated object-cover object-[center_30%]"
-          priority
-        />
+        {pixVariant ? (
+          <PixelBanner
+            variant={pixVariant}
+            className="absolute inset-0 h-full w-full rounded-none border-0"
+          />
+        ) : (
+          <Image
+            src={profile.banner_url}
+            alt="Profile banner artwork"
+            fill
+            sizes="(max-width: 768px) 100vw, 960px"
+            className="pixelated object-cover object-[72%_28%]"
+            priority
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-panel via-panel/35 to-transparent" />
         <span className="absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-black/45 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#ffd98a] backdrop-blur-sm">
           <Flame size={11} strokeWidth={2} /> Lvl. {lp.level}
