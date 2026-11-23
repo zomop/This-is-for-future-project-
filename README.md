@@ -36,14 +36,14 @@ A dark-fantasy social identity layer for a small online island community — thi
 - **Communities** (`/communities`, `/join/[code]`) — create public/invite-only communities, per-community live chat with role-colored names, community owner + moderator roles, kick/promote, shareable invite links, member management
 - **Animated pixel banners (GIF-style)** — hand-coded SVG pixel art (field / island / sunset / night / arcade / forest / rain scenes) animated frame-by-frame with stepped timing — drifting clouds, rolling waves, twinkling stars, flapping birds, bouncing slime — code-generated in-repo, no AI art
 - **Design center** (`/settings`) — 6 accent themes + banner picker + profile frame picker, applied instantly; the accent recolors the whole site (buttons, links, bars, glows)
+- **Pixel world — Slice 3a** (`/world`) — "The Field of the Fallen Sword": a Phaser world drawn entirely in code (Central Plaza with fountain, pond, paths), accent-tinted pixel-kid avatar with walk cycles, arrow/WASD + mobile d-pad movement, tile collision, region triggers — multiplayer sync and the five other zones land slice by slice, with zero fake players
 - **Privacy by default** — usernames are never derived from signup emails (accounts auto-name as `traveler_0001`-style), no email is ever rendered anywhere in the UI, login/reset flows don't reveal whether an email is registered
 - **Staff console** (`/admin`) — member census, role list, audit log (moderator+)
 - Required profile picture at signup (bundled pixel avatars or upload to own-folder storage with RLS)
 
 ### In development (honestly labeled in-app — never fake controls)
 
-- **Notifications** — bell + Realtime toasts (last open P2 piece)
-- **P3** — Phaser pixel World (Plaza, Beach, Pier, Forest Lake, Garden, Arcade)
+- **P3 · Pixel World** — Slice 3a live (Plaza + movement); next: multiplayer sync, 5 more zones, chat bubbles
 - **P4** — Legendary fishing (species, rods, bait, inventory, coins economy)
 - **P5** — Mini-games, full moderation queues
 

@@ -1,8 +1,14 @@
 # Phase 3 — The Field of the Fallen Sword (Pixel World) · Technical Spec
 
-Status: **DRAFT FOR REVIEW** — no code until this is approved.
+Status: **APPROVED** (2026-11-23) — decisions recorded below; Slice 3a in progress.
 Scope: master spec §5 (Virtual World) + the seam that Phase 4 (fishing) attaches to.
 Working title kept from the in-app `/world` notice: **The Field of the Fallen Sword**.
+
+**Decisions (user sign-off, 2026-11-23):**
+1. Movement: **free pixel-smooth** movement with tile collision (§7).
+2. World chat: **ephemeral bubbles**, clearly labeled (§9).
+3. Avatar: **accent-tinted pixel kid** (16×24, 4-direction walk cycles) (§6).
+4. Zones: **keep the six** exactly as the in-app notice lists (§5).
 
 ---
 
