@@ -1,0 +1,4 @@
+/minikv
+*.o
+*.a
+core
