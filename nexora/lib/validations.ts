@@ -27,9 +27,14 @@ export const PROFILE_BANNERS = [
   "pix:sunset",
   "pix:night",
   "pix:arcade",
+  "pix:forest",
+  "pix:rain",
 ] as const;
 
 export const bannerUrlSchema = z.enum(PROFILE_BANNERS);
+
+export const ACCENT_THEME_SLUGS = ["cyan", "gold", "mint", "rose", "violet", "ember"] as const;
+export const accentThemeSchema = z.enum(ACCENT_THEME_SLUGS);
 
 export const registerSchema = z.object({
   displayName: z
@@ -64,7 +69,6 @@ export const profileSchema = z.object({
   bio: z.string().trim().max(280, "Bio must be at most 280 characters"),
   status: z.string().trim().max(80, "Status must be at most 80 characters"),
   avatar_url: avatarUrlSchema,
-  banner_url: bannerUrlSchema,
   privacy: z.enum(["public", "friends", "private"]),
 });
 

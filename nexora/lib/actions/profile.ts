@@ -29,7 +29,6 @@ export async function updateProfileAction(
     bio: formData.get("bio") ?? "",
     status: formData.get("status") ?? "",
     avatar_url: formData.get("avatar_url"),
-    banner_url: formData.get("banner_url") ?? "/banners/field.png",
     privacy: formData.get("privacy"),
   });
   if (!parsed.success) {
@@ -65,7 +64,6 @@ export async function updateProfileAction(
       bio: input.bio,
       status: input.status,
       avatar_url: avatarUrl,
-      banner_url: input.banner_url,
       privacy: input.privacy,
     })
     .eq("id", user.id);

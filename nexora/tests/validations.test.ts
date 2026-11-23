@@ -4,6 +4,8 @@ import {
   profileSchema,
   passwordSchema,
   loginSchema,
+  bannerUrlSchema,
+  accentThemeSchema,
 } from "@/lib/validations";
 
 const validProfile = {
@@ -12,7 +14,6 @@ const validProfile = {
   bio: "Aspiring pier angler",
   status: "Online",
   avatar_url: "/avatars/knight.png",
-  banner_url: "/banners/field.png",
   privacy: "public" as const,
 };
 
@@ -142,8 +143,10 @@ describe("profile banners", () => {
       "pix:sunset",
       "pix:night",
       "pix:arcade",
+      "pix:forest",
+      "pix:rain",
     ]) {
-      expect(profileSchema.safeParse({ ...validProfile, banner_url }).success).toBe(true);
+      expect(bannerUrlSchema.safeParse(banner_url).success).toBe(true);
     }
   });
   it("rejects unknown banner values", () => {
@@ -153,7 +156,20 @@ describe("profile banners", () => {
       "javascript:alert(1)",
       "https://evil.example.com/banner.png",
     ]) {
-      expect(profileSchema.safeParse({ ...validProfile, banner_url }).success).toBe(false);
+      expect(bannerUrlSchema.safeParse(banner_url).success).toBe(false);
+    }
+  });
+});
+
+describe("accent themes", () => {
+  it("accepts every shipped accent theme", () => {
+    for (const slug of ["cyan", "gold", "mint", "rose", "violet", "ember"]) {
+      expect(accentThemeSchema.safeParse(slug).success).toBe(true);
+    }
+  });
+  it("rejects unknown accent themes", () => {
+    for (const slug of ["neon", "red; DROP TABLE", ""]) {
+      expect(accentThemeSchema.safeParse(slug).success).toBe(false);
     }
   });
 });

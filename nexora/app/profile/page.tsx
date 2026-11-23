@@ -1,11 +1,10 @@
 import Link from "next/link";
-import { ExternalLink, Trophy, Lock, Frame } from "lucide-react";
+import { ExternalLink, Trophy, Lock, Frame, ChevronRight } from "lucide-react";
 import { requireProfile } from "@/lib/guard";
 import { AppShell } from "@/components/app-shell";
 import { ProfileBannerCard } from "@/components/profile-banner-card";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProfileForm } from "./profile-form";
-import { FramePicker } from "@/components/frame-picker";
 import { getEarnedAchievements, getAllAchievements } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -41,11 +40,20 @@ export default async function ProfilePage() {
 
       <Card className="mt-5">
         <CardHeader className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2"><Frame size={13} /> Profile frame</CardTitle>
-          <span className="text-[11px] font-semibold text-muted">Level-gated decorations</span>
+          <CardTitle className="flex items-center gap-2"><Frame size={13} /> Look &amp; style</CardTitle>
+          <span className="text-[11px] font-semibold text-muted">Accent · banner · frame</span>
         </CardHeader>
-        <div className="p-5 sm:p-6">
-          <FramePicker profile={profile} />
+        <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-5">
+          <p className="text-sm text-muted">
+            Accent color, profile banner and profile frames all live in the design
+            center — change them however you like, one tap to apply.
+          </p>
+          <Link
+            href="/settings"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-accentdim bg-[#0d2733] px-4 py-2 text-sm font-bold text-accent hover:bg-[#123242]"
+          >
+            Open design center <ChevronRight size={15} />
+          </Link>
         </div>
       </Card>
 

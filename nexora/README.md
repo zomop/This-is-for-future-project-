@@ -96,7 +96,7 @@ and `ASSET_CREDITS.md` for artwork provenance (all art is generated in-repo).
 
 ### Cosmetics & global chat (2026-11-22, post-P2 add-on)
 - **Profile frames** — 16 level-gated avatar decorations (Clean Cut → Celestial Halo plus a second wave: Frost Ring, Mono Line, Citrus Punch, Rose Halo, Tide Sweep, Onyx Edge, Nebula Spin, Phoenix Spark), pure CSS, server-enforced unlocks via `updateFrameAction` (`lib/frames.ts`).
-- **Profile banners** — pick a banner on `/profile`: the classic static art or one of four animated pixel scenes (island / sunset / night / arcade) rendered live by `components/pixel-banner.tsx` (code-drawn SVG). Values are validated server-side against `PROFILE_BANNERS`; `pix:<variant>` stores the animated choice.
+- **Design center (Settings)** — accent color, profile banner, and profile frame all live in `/settings`, each one tap to apply (server-validated: `accentThemeSchema`, `bannerUrlSchema`, `updateFrameAction`). Accent themes re-color the whole site chrome per user via CSS variables (`profiles.accent_theme`, six palettes). Profile banners: the classic static art or one of six animated pixel scenes (island / sunset / night / arcade / forest / rain) rendered live by `components/pixel-banner.tsx` (code-drawn SVG, `pix:<variant>` in `profiles.banner_url`).
 - **Community icon picker** — creating a community now uses a tap-to-select emoji grid (with a custom fallback) instead of a free-text input.
 - **Registration avatars** — sign up requires picking a bundled avatar or uploading your own (PNG/JPEG/WebP/GIF, ≤ 2 MB, served from the `avatars` storage bucket with own-folder RLS).
 - **Staff badges** — moderator/admin/owner badges now carry icons, a soft glow and a shimmer sweep (`components/ui/badge.tsx`).
