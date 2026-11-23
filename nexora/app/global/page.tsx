@@ -13,8 +13,8 @@ export const metadata = { title: "Global chat" };
 export const dynamic = "force-dynamic";
 
 export default async function GlobalChatPage() {
-  const profile = await requireProfile();
-  const [messages, staff] = await Promise.all([
+  const [profile, messages, staff] = await Promise.all([
+    requireProfile(),
     getGlobalMessages(120),
     getStaffMembers(8),
   ]);

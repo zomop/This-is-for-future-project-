@@ -26,9 +26,10 @@ export default async function PublicProfilePage({
   params: Promise<{ username: string }>;
 }) {
   const { username } = await params;
-  const viewer = await getUser();
-
-  const target = await getProfileByUsername(username);
+  const [viewer, target] = await Promise.all([
+    getUser(),
+    getProfileByUsername(username),
+  ]);
 
   // privacy gate: members-only profiles require a signed-in viewer
   const locked =
@@ -52,8 +53,10 @@ export default async function PublicProfilePage({
 
   if (!target) notFound();
 
-  const earned = await getEarnedAchievements(target.id);
-  const mine = viewer ? await requireProfile() : null;
+  const [earned, mine] = await Promise.all([
+    getEarnedAchievements(target.id),
+    viewer ? requireProfile() : Promise.resolve(null),
+  ]);
   const isSelf = viewer?.id === target.id;
 
   return (

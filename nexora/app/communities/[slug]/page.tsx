@@ -34,9 +34,10 @@ export default async function CommunityPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const profile = await requireProfile();
-
-  const community = await getCommunityBySlug(slug);
+  const [profile, community] = await Promise.all([
+    requireProfile(),
+    getCommunityBySlug(slug),
+  ]);
   if (!community) notFound();
 
   const isMember = community.myRole !== null;
