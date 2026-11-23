@@ -3,6 +3,13 @@ import { escapeLikePattern, friendRelation } from "@/lib/utils";
 import type {
   Achievement,
   AuditEntry,
+  Community,
+  CommunityInvite,
+  CommunityMemberRow,
+  CommunityMessage,
+  CommunityMessageWithSender,
+  CommunityRole,
+  CommunityWithMeta,
   ConversationSummary,
   EarnedAchievement,
   FriendStatus,
@@ -505,3 +512,186 @@ export async function searchPeople(rawQuery: string, limit = 12): Promise<Person
     };
   });
 }
+
+// ============ Communities ============
+
+type CommunityRow = Community;
+
+function withMeta(
+  row: CommunityRow,
+  memberCount: number,
+  myRole: CommunityRole | null
+): CommunityWithMeta {
+  return { ...row, memberCount, myRole };
+}
+
+/** Communities the viewer belongs to, newest activity first. */
+export async function getMyCommunities(): Promise<CommunityWithMeta[]> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data: memberships, error } = await supabase
+    .from("community_members")
+    .select("role, community:communities(*)")
+    .eq("user_id", user.id)
+    .order("joined_at", { ascending: false });
+  if (error) throw new Error(`Failed to load your communities: ${error.message}`);
+
+  type Row = { role: CommunityRole; community: CommunityRow | null };
+  const rows = ((memberships ?? []) as unknown as Row[]).filter((r) => r.community);
+  if (rows.length === 0) return [];
+
+  const counts = await getMemberCounts(rows.map((r) => r.community!.id));
+  return rows.map((r) =>
+    withMeta(r.community!, counts.get(r.community!.id) ?? 1, r.role)
+  );
+}
+
+/** Public communities the viewer has not joined (Discover strip). */
+export async function getDiscoverCommunities(limit = 8): Promise<CommunityWithMeta[]> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data: mine } = await supabase
+    .from("community_members")
+    .select("community_id")
+    .eq("user_id", user.id);
+  const mineIds = (mine ?? []).map((m) => m.community_id);
+
+  let query = supabase
+    .from("communities")
+    .select("*")
+    .eq("is_public", true)
+    .order("created_at", { ascending: false })
+    .limit(limit + mineIds.length);
+  if (mineIds.length > 0) query = query.not("id", "in", `(${mineIds.join(",")})`);
+  const { data, error } = await query;
+  if (error) throw new Error(`Failed to load communities: ${error.message}`);
+
+  const rows = ((data ?? []) as CommunityRow[]).slice(0, limit);
+  const counts = await getMemberCounts(rows.map((r) => r.id));
+  return rows.map((r) => withMeta(r, counts.get(r.id) ?? 1, null));
+}
+
+async function getMemberCounts(ids: string[]): Promise<Map<string, number>> {
+  const counts = new Map<string, number>();
+  if (ids.length === 0) return counts;
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("community_members")
+    .select("community_id")
+    .in("community_id", ids);
+  for (const row of data ?? []) {
+    counts.set(row.community_id, (counts.get(row.community_id) ?? 0) + 1);
+  }
+  return counts;
+}
+
+export interface CommunityDetail extends CommunityWithMeta {
+  /** Viewer's community-role for delete/mod powers in the chat UI. */
+  canModerate: boolean;
+}
+
+export async function getCommunityBySlug(slug: string): Promise<CommunityDetail | null> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data: community } = await supabase
+    .from("communities")
+    .select("*")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (!community) return null; // missing or hidden by RLS
+
+  const { data: myRow } = await supabase
+    .from("community_members")
+    .select("role")
+    .eq("community_id", community.id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  const counts = await getMemberCounts([community.id]);
+
+  const myRole = (myRow?.role as CommunityRole | undefined) ?? null;
+  return {
+    ...withMeta(community as CommunityRow, counts.get(community.id) ?? 1, myRole),
+    canModerate: myRole === "owner" || myRole === "moderator",
+  };
+}
+
+/** Community chat history (newest first from DB, returned oldest-first for display). */
+export async function getCommunityMessages(
+  communityId: string,
+  limit = 120
+): Promise<CommunityMessageWithSender[]> {
+  const supabase = await createClient();
+  const { data: rows, error } = await supabase
+    .from("community_messages")
+    .select("id, community_id, sender_id, body, created_at")
+    .eq("community_id", communityId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) throw new Error(`Failed to load community chat: ${error.message}`);
+  const messages = ((rows ?? []) as CommunityMessage[]).reverse();
+
+  const senderIds = [...new Set(messages.map((m) => m.sender_id))];
+  let senderById = new Map<string, GlobalMessageSender>();
+  if (senderIds.length > 0) {
+    const { data: senders } = await supabase
+      .from("profiles")
+      .select(GLOBAL_SENDER_COLS)
+      .in("id", senderIds);
+    senderById = new Map(
+      (senders ?? []).map((p) => [p.id as string, p as unknown as GlobalMessageSender])
+    );
+  }
+  return messages.map((m) => ({ ...m, sender: senderById.get(m.sender_id) ?? null }));
+}
+
+/** Members of a community with their community role (owner, then moderators, then members). */
+export async function getCommunityMembers(
+  communityId: string,
+  limit = 60
+): Promise<CommunityMemberRow[]> {
+  const supabase = await createClient();
+  const { data: rows, error } = await supabase
+    .from("community_members")
+    .select("role, joined_at, profile:profiles(*)")
+    .eq("community_id", communityId)
+    .limit(limit);
+  if (error) throw new Error(`Failed to load community members: ${error.message}`);
+
+  type Row = { role: CommunityRole; joined_at: string; profile: Profile | null };
+  const parsed = ((rows ?? []) as unknown as Row[]).filter((r) => r.profile);
+  const rank: Record<string, number> = { owner: 0, moderator: 1, member: 2 };
+  return parsed
+    .map((r) => ({ role: r.role, joined_at: r.joined_at, profile: r.profile! }))
+    .sort(
+      (a, b) =>
+        (rank[a.role] ?? 3) - (rank[b.role] ?? 3) ||
+        a.profile.username.localeCompare(b.profile.username)
+    );
+}
+
+/** Active invite links (owner/moderator view; RLS enforces). */
+export async function getCommunityInvites(communityId: string): Promise<CommunityInvite[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("community_invites")
+    .select("code, community_id, created_by, created_at, max_uses, uses")
+    .eq("community_id", communityId)
+    .order("created_at", { ascending: false })
+    .limit(10);
+  if (error) throw new Error(`Failed to load invites: ${error.message}`);
+  return (data ?? []) as CommunityInvite[];
+}
+
+export type { CommunityRole };

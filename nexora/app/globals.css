@@ -141,3 +141,55 @@ body {
     animation: none;
   }
 }
+
+/* ===== Animated pixel banners (hand-drawn SVG, code-only art) ===== */
+@keyframes pix-drift {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(18px); }
+}
+@keyframes pix-wave {
+  from { transform: translateX(0); }
+  to { transform: translateX(-64px); }
+}
+@keyframes pix-twinkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.12; }
+}
+@keyframes pix-blink {
+  0%, 42%, 58%, 100% { opacity: 1; }
+  50% { opacity: 0.18; }
+}
+@keyframes pix-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes pix-fly {
+  from { transform: translateX(-48px); }
+  to { transform: translateX(360px); }
+}
+@keyframes pix-shimmer {
+  0%, 100% { opacity: 0.45; transform: translateX(0); }
+  50% { opacity: 0.9; transform: translateX(10px); }
+}
+
+.pix-drift { animation: pix-drift 9s ease-in-out infinite; }
+.pix-drift-slow { animation: pix-drift 14s ease-in-out infinite; }
+.pix-wave { animation: pix-wave 3.2s linear infinite; }
+.pix-wave-slow { animation: pix-wave 5.5s linear infinite; }
+.pix-twinkle { animation: pix-twinkle 2.4s ease-in-out infinite; }
+.pix-twinkle-2 { animation: pix-twinkle 3.1s ease-in-out 0.8s infinite; }
+.pix-twinkle-3 { animation: pix-twinkle 2.8s ease-in-out 1.4s infinite; }
+.pix-blink { animation: pix-blink 2.6s steps(2, jump-none) infinite; }
+.pix-blink-2 { animation: pix-blink 3.4s steps(2, jump-none) 0.6s infinite; }
+.pix-bounce { animation: pix-bounce 1.6s ease-in-out infinite; }
+.pix-fly { animation: pix-fly 18s linear infinite; }
+.pix-fly-slow { animation: pix-fly 26s linear 4s infinite; }
+.pix-shimmer { animation: pix-shimmer 6s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pix-drift, .pix-drift-slow, .pix-wave, .pix-wave-slow,
+  .pix-twinkle, .pix-twinkle-2, .pix-twinkle-3,
+  .pix-blink, .pix-blink-2, .pix-bounce, .pix-fly, .pix-fly-slow, .pix-shimmer {
+    animation: none;
+  }
+}

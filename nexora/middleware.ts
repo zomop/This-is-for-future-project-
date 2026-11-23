@@ -10,6 +10,7 @@ const PROTECTED = [
   "/friends",
   "/global",
   "/communities",
+  "/join",
   "/discover",
   "/world",
   "/games",

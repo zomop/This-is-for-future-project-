@@ -84,3 +84,47 @@ export const globalMessageSchema = z.object({
     .min(1, "Message cannot be empty")
     .max(500, "Global messages are capped at 500 characters"),
 });
+
+// ============ Communities ============
+
+export const BANNER_VARIANTS = ["island", "sunset", "night", "arcade"] as const;
+
+export const communitySchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(2, "Community name must be at least 2 characters")
+    .max(48, "Community name must be at most 48 characters"),
+  slug: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .regex(/^[a-z0-9_-]{3,32}$/, "3–32 chars: lowercase letters, numbers, dashes, underscores"),
+  description: z
+    .string()
+    .trim()
+    .max(280, "Description must be at most 280 characters"),
+  emoji: z
+    .string()
+    .trim()
+    .min(1, "Pick a short label or emoji for your community")
+    .max(8, "Keep it to 8 characters or fewer"),
+  banner_variant: z.enum(BANNER_VARIANTS),
+  is_public: z.boolean(),
+});
+
+export const communityMessageSchema = z.object({
+  body: z
+    .string()
+    .trim()
+    .min(1, "Message cannot be empty")
+    .max(500, "Community messages are capped at 500 characters"),
+});
+
+export const inviteCodeSchema = z.object({
+  code: z
+    .string()
+    .trim()
+    .toUpperCase()
+    .regex(/^[A-Z0-9]{8}$/, "Invite codes are 8 letters/digits"),
+});

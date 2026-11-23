@@ -3,6 +3,7 @@ import { Globe, Radio, ShieldCheck, Crown } from "lucide-react";
 import { requireProfile } from "@/lib/guard";
 import { AppShell } from "@/components/app-shell";
 import { GlobalChat } from "@/components/global-chat";
+import { PixelBanner } from "@/components/pixel-banner";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { RoleBadge } from "@/components/ui/badge";
 import { FramedAvatar } from "@/components/framed-avatar";
@@ -20,19 +21,25 @@ export default async function GlobalChatPage() {
 
   return (
     <AppShell profile={profile}>
-      <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-accent">
-            <Globe size={11} className="mr-1 inline -translate-y-[1px]" />
-            Global
-          </p>
-          <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-foreground">
-            One island, one voice.
-          </h1>
+      {/* animated pixel banner header */}
+      <div className="relative">
+        <PixelBanner variant="night" className="h-28 sm:h-32" />
+        <div className="absolute inset-x-0 bottom-0 rounded-b-2xl bg-gradient-to-t from-graphite via-graphite/70 to-transparent px-5 pb-3.5 pt-8">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-accent">
+                <Globe size={11} className="mr-1 inline -translate-y-[1px]" />
+                Global
+              </p>
+              <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-foreground">
+                One island, one voice.
+              </h1>
+            </div>
+            <p className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-muted">
+              <Radio size={13} className="text-good" /> Live over Realtime
+            </p>
+          </div>
         </div>
-        <p className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-muted">
-          <Radio size={13} className="text-good" /> Live over Realtime
-        </p>
       </div>
 
       <div className="grid items-start gap-5 xl:grid-cols-[1fr_264px]">

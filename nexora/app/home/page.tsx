@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { requireProfile } from "@/lib/guard";
 import { AppShell } from "@/components/app-shell";
+import { PixelBanner } from "@/components/pixel-banner";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { RoleBadge } from "@/components/ui/badge";
 import { FramedAvatar } from "@/components/framed-avatar";
@@ -67,6 +68,9 @@ export default async function HomePage() {
           <Pencil size={14} /> Customize profile
         </Link>
       </div>
+
+      {/* animated pixel strip — island vibes */}
+      <PixelBanner variant="island" className="mt-4 h-20 sm:h-24" />
 
       {/* compact identity strip — the full showcase lives on /profile */}
       <div className="mt-4 flex items-center gap-4 rounded-2xl border border-line bg-panel px-4 py-3 shadow-[0_10px_40px_rgba(0,0,0,0.3)] sm:px-5">
