@@ -92,7 +92,9 @@ platform port via `next start`. See `docs/NEXORA_SPEC.md` for the full product s
 `ASSET_CREDITS.md` for artwork provenance (all art is generated in-repo).
 
 ### Cosmetics & global chat (2026-11-22, post-P2 add-on)
-- **Profile frames** — 8 level-gated avatar decorations (Clean Cut → Celestial Halo), pure CSS, server-enforced unlocks via `updateFrameAction` (`lib/frames.ts`).
+- **Profile frames** — 16 level-gated avatar decorations (Clean Cut → Celestial Halo plus a second wave: Frost Ring, Mono Line, Citrus Punch, Rose Halo, Tide Sweep, Onyx Edge, Nebula Spin, Phoenix Spark), pure CSS, server-enforced unlocks via `updateFrameAction` (`lib/frames.ts`).
+- **Profile banners** — pick a banner on `/profile`: the classic static art or one of four animated pixel scenes (island / sunset / night / arcade) rendered live by `components/pixel-banner.tsx` (code-drawn SVG). Values are validated server-side against `PROFILE_BANNERS`; `pix:<variant>` stores the animated choice.
+- **Community icon picker** — creating a community now uses a tap-to-select emoji grid (with a custom fallback) instead of a free-text input.
 - **Registration avatars** — sign up requires picking a bundled avatar or uploading your own (PNG/JPEG/WebP/GIF, ≤ 2 MB, served from the `avatars` storage bucket with own-folder RLS).
 - **Staff badges** — moderator/admin/owner badges now carry icons, a soft glow and a shimmer sweep (`components/ui/badge.tsx`).
 - **Global chat** — `/global`, a single island-wide channel with a Discord-style UI synced live over Supabase Realtime (INSERT/DELETE propagate instantly), server-side 30 msg/min rate limit, staff can delete any message (`global_messages` table + RLS).

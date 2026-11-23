@@ -83,10 +83,10 @@ export default async function CommunityPage({
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-4">
         {/* chat / join */}
-        <div className="flex flex-col gap-5 lg:col-span-3">
+        <div className="flex min-w-0 flex-col gap-5 lg:col-span-3">
           {isMember ? (
             <Card className="flex min-h-[480px] flex-col p-0">
-              <CardHeader className="flex items-center justify-between rounded-t-2xl border-b border-line">
+              <CardHeader className="flex flex-wrap items-center justify-between gap-2 rounded-t-2xl border-b border-line">
                 <CardTitle className="flex items-center gap-2">
                   <UsersRound size={13} /> Community chat
                 </CardTitle>
@@ -126,7 +126,7 @@ export default async function CommunityPage({
         </div>
 
         {/* side rail */}
-        <div className="flex flex-col gap-5">
+        <div className="flex min-w-0 flex-col gap-5">
           {/* members */}
           <Card>
             <CardHeader className="flex items-center justify-between">

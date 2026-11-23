@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { Loader2, Trophy, X } from "lucide-react";
 import { AvatarPicker } from "@/components/avatar-picker";
+import { BannerPicker } from "@/components/banner-picker";
 import { updateProfileAction, type ProfileFormState } from "@/lib/actions/profile";
 import { Button } from "@/components/ui/button";
 import { Input, Textarea, Label, Select } from "@/components/ui/input";
@@ -21,6 +22,14 @@ export function ProfileForm({ profile }: { profile: Profile }) {
     <form action={action} className="max-w-2xl space-y-5" noValidate>
       {/* avatar picker (bundled defaults + device upload) */}
       <AvatarPicker current={profile.avatar_url} frame={profile.frame_slug} />
+
+      {/* banner picker (static presets + animated pixel scenes) */}
+      <div className="space-y-2">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-muted">
+          Profile banner
+        </p>
+        <BannerPicker current={profile.banner_url} />
+      </div>
 
 
       <div className="grid gap-4 sm:grid-cols-2">

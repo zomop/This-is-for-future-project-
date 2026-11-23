@@ -16,12 +16,20 @@ const BANNERS: { value: BannerVariant; label: string; swatch: string }[] = [
   { value: "arcade", label: "Arcade", swatch: "from-[#241246] to-[#0d0820]" },
 ];
 
+/** Tap-to-select icon presets for the community icon picker. */
+const ICONS = [
+  "🏝️", "⚔️", "🌋", "🌙", "🎮", "🏰", "🔥", "🌊",
+  "🌌", "⚡", "🗡️", "🛡️", "🐉", "🌸", "🏆", "🎯",
+  "💎", "🚀", "🎵", "🍃", "🐙", "🧭",
+];
+
 const inputCls =
   "w-full rounded-xl border border-line bg-panel2 px-3 py-2.5 text-[12.5px] text-foreground outline-none placeholder:text-muted focus:border-accentdim";
 
 export function CreateCommunityForm() {
   const [state, action, pending] = useActionState(createCommunityAction, initial);
   const [banner, setBanner] = useState<BannerVariant>("island");
+  const [icon, setIcon] = useState<string>("🏝️");
 
   return (
     <form action={action} className="flex flex-col gap-3">
@@ -56,12 +64,39 @@ export function CreateCommunityForm() {
         />
       </label>
       <div className="grid gap-3 sm:grid-cols-2">
-        <label className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-1.5">
           <span className="text-[10px] font-bold uppercase tracking-wider text-muted">
             Icon / emoji
           </span>
-          <input name="emoji" maxLength={8} placeholder="🎨" className={inputCls} defaultValue="🏝️" />
-        </label>
+          <input type="hidden" name="emoji" value={icon} />
+          <div className="flex flex-wrap gap-1" role="group" aria-label="Community icon">
+            {ICONS.map((e) => (
+              <button
+                key={e}
+                type="button"
+                onClick={() => setIcon(e)}
+                aria-pressed={icon === e}
+                className={cn(
+                  "flex h-9 w-9 items-center justify-center rounded-lg border text-[16px] transition-all",
+                  icon === e
+                    ? "border-accent bg-accent/15 ring-1 ring-accent"
+                    : "border-line bg-panel2 opacity-80 hover:border-panel3 hover:opacity-100"
+                )}
+              >
+                <span aria-hidden>{e}</span>
+                <span className="sr-only">Use {e} as icon</span>
+              </button>
+            ))}
+          </div>
+          <input
+            value={icon}
+            onChange={(e) => setIcon(e.target.value.slice(0, 8))}
+            maxLength={8}
+            placeholder="Custom icon"
+            aria-label="Custom community icon"
+            className={cn(inputCls, "mt-0.5")}
+          />
+        </div>
         <div className="flex flex-col gap-1.5">
           <span className="text-[10px] font-bold uppercase tracking-wider text-muted">
             Pixel banner

@@ -12,6 +12,7 @@ const validProfile = {
   bio: "Aspiring pier angler",
   status: "Online",
   avatar_url: "/avatars/knight.png",
+  banner_url: "/banners/field.png",
   privacy: "public" as const,
 };
 
@@ -130,5 +131,29 @@ describe("avatar uploads", () => {
       avatar_url: "https://evil.example.com/pixel.png",
     });
     expect(r.success).toBe(false);
+  });
+});
+
+describe("profile banners", () => {
+  it("accepts the classic preset and every animated pix banner", () => {
+    for (const banner_url of [
+      "/banners/field.png",
+      "pix:island",
+      "pix:sunset",
+      "pix:night",
+      "pix:arcade",
+    ]) {
+      expect(profileSchema.safeParse({ ...validProfile, banner_url }).success).toBe(true);
+    }
+  });
+  it("rejects unknown banner values", () => {
+    for (const banner_url of [
+      "pix:does-not-exist",
+      "/banners/other.png",
+      "javascript:alert(1)",
+      "https://evil.example.com/banner.png",
+    ]) {
+      expect(profileSchema.safeParse({ ...validProfile, banner_url }).success).toBe(false);
+    }
   });
 });

@@ -66,7 +66,7 @@ export function CommunityControls({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between rounded-xl border border-line bg-panel2 px-3 py-2">
+      <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-line bg-panel2 px-3 py-2">
         <span className="text-[11px] text-muted">
           You are{" "}
           <span className="font-bold text-foreground">
@@ -200,7 +200,7 @@ export function InvitePanel({
 
   return (
     <div className="rounded-2xl border border-line bg-panel">
-      <div className="flex items-center justify-between px-4 pt-4">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-4 pt-4">
         <h3 className="flex items-center gap-2 text-[12px] font-extrabold text-foreground">
           <Link2 size={13} /> Invite links
         </h3>

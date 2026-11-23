@@ -24,4 +24,31 @@ describe("profile frames", () => {
   it("keeps frame slugs unique", () => {
     expect(new Set(FRAME_SLUGS).size).toBe(FRAME_SLUGS.length);
   });
+
+  it("ships the second wave of new frames alongside the originals", () => {
+    for (const slug of ["frost", "mono", "citrus", "rose", "tide", "onyx", "nebula", "phoenix"]) {
+      expect(FRAME_SLUGS).toContain(slug);
+    }
+    // all 8 originals are still present and unchanged in gating
+    for (const slug of ["none", "azure", "verdant", "ember", "royal", "aurora", "solar", "celestial"]) {
+      expect(FRAME_SLUGS).toContain(slug);
+    }
+    expect(FRAMES.length).toBe(16);
+  });
+
+  it("gates the new frames by level too", () => {
+    expect(canEquipFrame(1, "frost")).toBe(true);
+    expect(canEquipFrame(1, "mono")).toBe(false);
+    expect(canEquipFrame(2, "mono")).toBe(true);
+    expect(canEquipFrame(5, "tide")).toBe(true);
+    expect(canEquipFrame(4, "tide")).toBe(false);
+    expect(canEquipFrame(8, "phoenix")).toBe(true);
+    expect(canEquipFrame(7, "phoenix")).toBe(false);
+  });
+
+  it("offers at least one frame at every level 1-8", () => {
+    for (let level = 1; level <= 8; level++) {
+      expect(FRAMES.some((f) => f.minLevel === level)).toBe(true);
+    }
+  });
 });

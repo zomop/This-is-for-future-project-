@@ -16,6 +16,21 @@ export const avatarUrlSchema = z.union([
   z.string().regex(UPLOADED_AVATAR_RE, "Avatar must be a default avatar or an uploaded image"),
 ]);
 
+/**
+ * Profile banner options. `/banners/…` values are static preset images;
+ * `pix:<variant>` values are the animated pixel scenes rendered by
+ * <PixelBanner /> (code-drawn SVG — see components/pixel-banner.tsx).
+ */
+export const PROFILE_BANNERS = [
+  "/banners/field.png",
+  "pix:island",
+  "pix:sunset",
+  "pix:night",
+  "pix:arcade",
+] as const;
+
+export const bannerUrlSchema = z.enum(PROFILE_BANNERS);
+
 export const registerSchema = z.object({
   displayName: z
     .string()
@@ -49,6 +64,7 @@ export const profileSchema = z.object({
   bio: z.string().trim().max(280, "Bio must be at most 280 characters"),
   status: z.string().trim().max(80, "Status must be at most 80 characters"),
   avatar_url: avatarUrlSchema,
+  banner_url: bannerUrlSchema,
   privacy: z.enum(["public", "friends", "private"]),
 });
 
