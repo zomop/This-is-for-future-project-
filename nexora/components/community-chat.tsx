@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import { SendHorizontal, Loader2, Trash2, ArrowDown } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useTyping } from "@/components/use-typing";
 import {
   sendCommunityMessageAction,
   deleteCommunityMessageAction,
@@ -66,12 +67,14 @@ function buildRows(messages: CommunityMessageWithSender[]): Row[] {
 export function CommunityChat({
   communityId,
   meId,
+  myName,
   myRole,
   memberRoles,
   initialMessages,
 }: {
   communityId: string;
   meId: string;
+  myName: string;
   /** Viewer's community role — owner/moderators can delete any message. */
   myRole: CommunityRole | null;
   /** Community role of each sender (for name colors). */
@@ -83,6 +86,7 @@ export function CommunityChat({
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [bodyLength, setBodyLength] = useState(0);
   const [missed, setMissed] = useState(0);
+  const { typingNames, notifyTyping } = useTyping(`community:${communityId}`, meId, myName);
   const formRef = useRef<HTMLFormElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const nearBottomRef = useRef(true);
@@ -227,7 +231,7 @@ export function CommunityChat({
               nearBottomRef.current = true;
               setMissed(0);
             }}
-            className="inline-flex items-center gap-1.5 rounded-full border border-accentdim bg-[#0d2733] px-3 py-1 text-[10px] font-bold text-accent shadow-lg"
+            className="inline-flex items-center gap-1.5 rounded-full border border-accentdim bg-accent/10 px-3 py-1 text-[10px] font-bold text-accent shadow-lg"
           >
             <ArrowDown size={13} /> {missed} new
           </button>
@@ -239,6 +243,11 @@ export function CommunityChat({
       )}
 
       {/* composer */}
+      <p className="h-5 px-4 pt-1 text-[10px] font-semibold italic text-accent" aria-live="polite">
+        {typingNames.length > 0
+          ? `${typingNames.join(", ")} ${typingNames.length === 1 ? "is" : "are"} typing…`
+          : ""}
+      </p>
       <form
         ref={formRef}
         action={formAction}
@@ -252,7 +261,10 @@ export function CommunityChat({
             maxLength={500}
             placeholder="Message this community…"
             aria-label="Message body"
-            onChange={(e) => setBodyLength(e.target.value.length)}
+            onChange={(e) => {
+              setBodyLength(e.target.value.length);
+              notifyTyping();
+            }}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
@@ -269,7 +281,7 @@ export function CommunityChat({
           type="submit"
           disabled={pending}
           aria-label="Send message"
-          className="flex h-[38px] shrink-0 items-center gap-1.5 rounded-xl bg-accent px-3.5 text-[11px] font-extrabold text-[#062630] transition-colors hover:bg-[#67e0fa] disabled:opacity-60"
+          className="flex h-[38px] shrink-0 items-center gap-1.5 rounded-xl bg-accent px-3.5 text-[11px] font-extrabold text-[#062630] transition-all hover:brightness-110 disabled:opacity-60"
         >
           {pending ? <Loader2 size={14} className="animate-spin" /> : <SendHorizontal size={14} />}
           Send

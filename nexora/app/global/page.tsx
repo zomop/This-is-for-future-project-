@@ -43,7 +43,7 @@ export default async function GlobalChatPage() {
       </div>
 
       <div className="grid items-start gap-5 xl:grid-cols-[1fr_264px]">
-        <GlobalChat meId={profile.id} myRole={profile.role} initialMessages={messages} />
+        <GlobalChat meId={profile.id} myName={profile.display_name} myRole={profile.role} initialMessages={messages} />
 
         {/* side rail: staff + house rules (decorative rail, real roster) */}
         <aside className="hidden space-y-5 xl:block">
