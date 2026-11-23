@@ -34,7 +34,7 @@ const NAV = [
   { href: "/friends", label: "Friends", icon: Users, phase: 0 },
   { href: "/global", label: "Global", icon: Globe, phase: 0 },
   { href: "/communities", label: "Communities", icon: UsersRound, phase: 2 },
-  { href: "/discover", label: "Discover", icon: Compass, phase: 2 },
+  { href: "/discover", label: "Discover", icon: Compass, phase: 0 },
   { href: "/world", label: "World", icon: Map, phase: 3 },
   { href: "/games", label: "Games", icon: Gamepad2, phase: 4 },
   { href: "/inventory", label: "Inventory", icon: Backpack, phase: 4 },

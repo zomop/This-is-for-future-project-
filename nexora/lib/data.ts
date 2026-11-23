@@ -1,13 +1,16 @@
 import { createClient } from "@/lib/supabase/server";
+import { escapeLikePattern, friendRelation } from "@/lib/utils";
 import type {
   Achievement,
   AuditEntry,
   ConversationSummary,
   EarnedAchievement,
+  FriendStatus,
   GlobalMessage,
   GlobalMessageSender,
   GlobalMessageWithSender,
   Message,
+  PersonRelation,
   Profile,
 } from "@/lib/types";
 
@@ -388,4 +391,117 @@ export async function getStaffMembers(limit = 8): Promise<Profile[]> {
   return ((data ?? []) as Profile[]).sort(
     (a, b) => rank[a.role as keyof typeof rank] - rank[b.role as keyof typeof rank]
   );
+}
+
+// ============ Discover ============
+
+export interface XpMover {
+  /** XP earned from achievements in the last 7 days. */
+  weeklyXp: number;
+  profile: Profile;
+}
+
+/**
+ * Travelers who earned the most XP in the last 7 days.
+ * Weekly XP is derived from achievement awards (user_achievements.earned_at) —
+ * the only source of XP in the game — so it reflects real activity.
+ * Private profiles are skipped rather than leaked.
+ */
+export async function getWeeklyXpMovers(limit = 6): Promise<XpMover[]> {
+  const supabase = await createClient();
+  const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const { data: rows, error } = await supabase
+    .from("user_achievements")
+    .select("user_id, achievement:achievements(xp_reward)")
+    .gte("earned_at", since)
+    .limit(2000); // week's awards across the realm; aggregated below
+  if (error) throw new Error(`Failed to load weekly XP: ${error.message}`);
+
+  type Row = { user_id: string; achievement: { xp_reward: number } | null };
+  const totals = new Map<string, number>();
+  for (const r of (rows ?? []) as unknown as Row[]) {
+    if (!r.achievement) continue;
+    totals.set(r.user_id, (totals.get(r.user_id) ?? 0) + r.achievement.xp_reward);
+  }
+
+  const ids = [...totals.keys()];
+  if (ids.length === 0) return [];
+
+  const { data: profs } = await supabase
+    .from("profiles")
+    .select(FEED_PROFILE_COLS)
+    .in("id", ids)
+    .neq("privacy", "private");
+  const profileById = new Map((profs ?? []).map((p) => [p.id as string, p as Profile]));
+
+  return ids
+    .map((id) => ({ weeklyXp: totals.get(id) ?? 0, profile: profileById.get(id) }))
+    .filter((m): m is XpMover => Boolean(m.profile))
+    .sort(
+      (a, b) =>
+        b.weeklyXp - a.weeklyXp || a.profile.username.localeCompare(b.profile.username)
+    )
+    .slice(0, limit);
+}
+
+export interface PersonHit {
+  profile: Profile;
+  relation: PersonRelation;
+  /** Present for pending/accepted pairs so the UI can act on the friendship row. */
+  friendshipId: string | null;
+}
+
+/**
+ * People search for Discover: username or display-name match, non-private
+ * profiles only, never the viewer themselves. Query input is sanitized for the
+ * PostgREST or() DSL before interpolation.
+ */
+export async function searchPeople(rawQuery: string, limit = 12): Promise<PersonHit[]> {
+  const pattern = escapeLikePattern(rawQuery);
+  if (!pattern) return [];
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data: profs, error } = await supabase
+    .from("profiles")
+    .select(FEED_PROFILE_COLS)
+    .or(`username.ilike.%${pattern}%,display_name.ilike.%${pattern}%`)
+    .neq("privacy", "private")
+    .neq("id", user.id)
+    .order("username", { ascending: true })
+    .limit(limit);
+  if (error) throw new Error(`Failed to search people: ${error.message}`);
+  const profiles = (profs ?? []) as Profile[];
+  if (profiles.length === 0) return [];
+
+  const ids = new Set(profiles.map((p) => p.id));
+  const { data: rels } = await supabase
+    .from("friendships")
+    .select("id, requester_id, addressee_id, status")
+    .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`);
+  const relByOther = new Map<
+    string,
+    { id: string; status: FriendStatus; iAmRequester: boolean }
+  >();
+  for (const r of rels ?? []) {
+    const otherId = r.requester_id === user.id ? r.addressee_id : r.requester_id;
+    if (!ids.has(otherId)) continue;
+    relByOther.set(otherId, {
+      id: r.id,
+      status: r.status as FriendStatus,
+      iAmRequester: r.requester_id === user.id,
+    });
+  }
+
+  return profiles.map((profile) => {
+    const rel = relByOther.get(profile.id);
+    return {
+      profile,
+      relation: friendRelation(rel?.status ?? null, rel?.iAmRequester ?? true),
+      friendshipId: rel && (rel.status === "pending" || rel.status === "accepted") ? rel.id : null,
+    };
+  });
 }
