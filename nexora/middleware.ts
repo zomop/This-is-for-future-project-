@@ -8,6 +8,7 @@ const PROTECTED = [
   "/admin",
   "/messages",
   "/friends",
+  "/global",
   "/communities",
   "/discover",
   "/world",

@@ -1,18 +1,25 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { signUpAction, type FormState } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/input";
+import { AvatarPicker } from "@/components/avatar-picker";
 
 const initial: FormState = {};
 
 export function RegisterForm() {
   const [state, action, pending] = useActionState(signUpAction, initial);
+  const [chosen, setChosen] = useState(false);
 
   return (
-    <form action={action} className="space-y-4" noValidate>
+    <form action={action} className="space-y-4" noValidate encType="multipart/form-data">
+      <div>
+        <Label>Pick your avatar <span className="text-accent">*</span></Label>
+        <AvatarPicker current="" requireChoice onChosen={setChosen} />
+      </div>
+
       <div>
         <Label htmlFor="displayName">Display name</Label>
         <Input
@@ -61,9 +68,9 @@ export function RegisterForm() {
         </p>
       )}
 
-      <Button type="submit" variant="gold" size="lg" className="w-full" disabled={pending}>
+      <Button type="submit" variant="gold" size="lg" className="w-full" disabled={pending || !chosen}>
         {pending ? <Loader2 size={18} className="animate-spin" /> : null}
-        {pending ? "Forging account…" : "Create account"}
+        {pending ? "Forging account…" : chosen ? "Create account" : "Choose an avatar to continue"}
       </Button>
     </form>
   );

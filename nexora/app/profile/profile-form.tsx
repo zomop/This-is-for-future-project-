@@ -1,19 +1,17 @@
 "use client";
 
-import Image from "next/image";
 import { useActionState, useState } from "react";
-import { Loader2, Check, Trophy, X } from "lucide-react";
+import { Loader2, Trophy, X } from "lucide-react";
+import { AvatarPicker } from "@/components/avatar-picker";
 import { updateProfileAction, type ProfileFormState } from "@/lib/actions/profile";
 import { Button } from "@/components/ui/button";
 import { Input, Textarea, Label, Select } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { AVATARS, type Profile } from "@/lib/types";
+import type { Profile } from "@/lib/types";
 
 const initial: ProfileFormState = {};
 
 export function ProfileForm({ profile }: { profile: Profile }) {
   const [state, action, pending] = useActionState(updateProfileAction, initial);
-  const [avatar, setAvatar] = useState(profile.avatar_url);
   // Derive toast visibility from server state + a local dismiss flag (no effect needed)
   const [dismissedUnlock, setDismissedUnlock] = useState<string | null>(null);
   const unlock = state.unlockedAchievement ?? null;
@@ -21,47 +19,9 @@ export function ProfileForm({ profile }: { profile: Profile }) {
 
   return (
     <form action={action} className="max-w-2xl space-y-5" noValidate>
-      {/* avatar picker */}
-      <fieldset>
-        <Label>Avatar</Label>
-        <div className="flex flex-wrap gap-3">
-          {AVATARS.map((src) => {
-            const selected = avatar === src;
-            return (
-              <label
-                key={src}
-                className={cn(
-                  "relative cursor-pointer rounded-2xl border p-1 transition-all",
-                  selected
-                    ? "border-accent bg-accent/10 ring-2 ring-accent/40"
-                    : "border-line bg-panel2 hover:border-panel3"
-                )}
-              >
-                <input
-                  type="radio"
-                  name="avatar_url"
-                  value={src}
-                  checked={selected}
-                  onChange={() => setAvatar(src)}
-                  className="sr-only"
-                />
-                <Image
-                  src={src}
-                  alt={`Avatar ${src.split("/").pop()}`}
-                  width={64}
-                  height={64}
-                  className="pixelated h-16 w-16 rounded-xl object-cover"
-                />
-                {selected && (
-                  <span className="absolute -right-1.5 -top-1.5 rounded-full bg-accent p-1 text-[#062630]">
-                    <Check size={11} strokeWidth={3.5} />
-                  </span>
-                )}
-              </label>
-            );
-          })}
-        </div>
-      </fieldset>
+      {/* avatar picker (bundled defaults + device upload) */}
+      <AvatarPicker current={profile.avatar_url} frame={profile.frame_slug} />
+
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>

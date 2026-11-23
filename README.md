@@ -1,86 +1,107 @@
-# mini-kv
+# This is for future project — NEXORA & mini-kv
 
-A tiny in-memory key-value cache written from scratch in C11 — a RESP2-compatible
-subset you can talk to with `redis-cli` (or any Redis client). Built as a systems
-playground with a long-term roadmap.
+A monorepo holding two projects:
 
-## Why
+| Project | Path | What it is | Status |
+| --- | --- | --- | --- |
+| **NEXORA — Social World** | [`nexora/`](nexora/) | Dark, premium social platform stitched into a shared pixel-art world: profiles, roles, XP, achievements, friends, DMs, global chat | Phase 1 + P2 friends/DMs live in production |
+| **mini-kv** | [`src/`](src/), [`include/`](include/), [`tests/`](tests/) | Tiny in-memory key-value cache in C11, RESP2-compatible subset | Working playground build |
 
-- Drop-in lightweight cache for local development and tinkering
-- Single-threaded, event-driven (epoll), non-blocking I/O
-- Zero runtime dependencies (libc + libm only)
-- Hash table with chaining, lazy + periodic TTL expiry
-- Incremental RESP2 protocol parser (inline-command fallback for `nc`/telnet)
+---
 
-## Build
+## NEXORA — the web app
 
-```sh
-make            # produces ./minikv
+**Live:** https://nexora-andre-dev4.vercel.app
+
+A dark-fantasy social identity layer for a small online island community — think the profile polish of the big social apps fused with a pixel-art world that is being built in phases. Everything server-authoritative: roles, XP, achievements and economy are enforced by Postgres (RLS + triggers), never by the client.
+
+### Stack
+
+- **Next.js 16** (App Router, React 19, Turbopack) · TypeScript strict
+- **Tailwind CSS v4** with `@theme` design tokens (graphite/navy + restrained cyan)
+- **Supabase** — Postgres, Auth, Row-Level Security, Realtime, Storage (free tier)
+- Zod server-side validation, cva-based UI primitives, Lucide icons, Vitest
+
+### What works today
+
+- Registration / login / logout with httpOnly Supabase session cookies; first registered user becomes **owner** automatically
+- Role hierarchy `guest < member < contributor < moderator < admin < owner`, enforced by RLS + a column-guard trigger (no client-side privilege escalation)
+- **Feed-first Home** (`/home`) — island activity, realm unlocks, your party (DMs), fresh faces, friends list — not a profile wall
+- Public profiles (`/u/[username]`) with privacy screens (`public` / `friends` / `private`), banner + bio + status + **profile frames** (8 level-gated avatar decorations, server-enforced)
+- XP & levels (200 XP per level), server-awarded achievements, celebration moments
+- **Friends & DMs** (`/friends`, `/messages`) — requests, accept/decline, 1-on-1 conversations with realtime delivery
+- **Global chat** (`/global`) — `#the-island`, Discord-style channel UI, synced live over Supabase Realtime, server-side 30 msg/min rate limit, staff delete any message
+- **Staff console** (`/admin`) — member census, role list, audit log (moderator+)
+- Required profile picture at signup (bundled pixel avatars or upload to own-folder storage with RLS)
+
+### In development (honestly labeled in-app — never fake controls)
+
+- **Discover** (`/discover`) — trending and search stubbed as in-development
+- **Communities** — roadmapped for P2, not started
+- **P3** — Phaser pixel World (Plaza, Beach, Pier, Forest Lake, Garden, Arcade)
+- **P4** — Legendary fishing (species, rods, bait, inventory, coins economy)
+- **P5** — Mini-games, full moderation queues
+
+### Quick start
+
+```bash
+cd nexora
+cp .env.example .env.local   # fill in Supabase project URL + anon key
+npm ci
+npm run dev                  # http://localhost:3000
 ```
 
-## Run
+Full docs: [`nexora/README.md`](nexora/README.md) · product spec: [`nexora/docs/NEXORA_SPEC.md`](nexora/docs/NEXORA_SPEC.md) · artwork provenance (all in-repo generated, no AI art): [`nexora/ASSET_CREDITS.md`](nexora/ASSET_CREDITS.md)
+
+---
+
+## mini-kv — systems playground
+
+A single-threaded, epoll-driven in-memory key-value store written from scratch in C11 — a RESP2-compatible subset you can talk to with `redis-cli`. Hash table with chaining, lazy + periodic TTL expiry, zero runtime dependencies.
 
 ```sh
-./minikv                # listens on 0.0.0.0:7379
-./minikv --port 6379    # custom port
-```
-
-Client examples:
-
-```sh
+make                                # produces ./minikv
+./minikv                            # listens on 0.0.0.0:7379
 redis-cli -p 7379 ping
-redis-cli -p 7379 set greeting "hello, world" EX 60
-redis-cli -p 7379 get greeting
-redis-cli -p 7379 info
+./tests/test_minikv.py              # stdlib-only integration tests
 ```
 
-## Supported commands
+Full reference — supported commands, design notes, roadmap: [`docs/mini-kv.md`](docs/mini-kv.md)
 
-| Command | Notes |
-|---|---|
-| `PING [msg]` | simple or bulk reply |
-| `ECHO msg` | |
-| `SET key val [EX s \| PX ms] [NX \| XX] [KEEPTTL]` | full option set |
-| `GET key` | |
-| `DEL key [key ...]` | |
-| `EXISTS key [key ...]` | counts duplicates, like Redis |
-| `EXPIRE key seconds` | `EXPIRE key 0` deletes, like Redis |
-| `TTL key` / `PTTL key` | `-2` missing, `-1` no TTL |
-| `FLUSHALL` / `FLUSHDB` | |
-| `DBSIZE` | |
-| `INFO` | server/clients/keyspace sections |
-| `COMMAND`, `CONFIG`, `SELECT 0`, `AUTH`, `QUIT` | compatibility stubs |
+---
 
-## Test
-
-```sh
-make
-./tests/test_minikv.py          # stdlib-only integration tests, starts a temp server
-./tests/test_minikv.py 7390     # custom test port
-```
-
-## Design / layout
+## Repository layout
 
 ```
-src/minikv.c   event loop, RESP2 parsing, command execution
-src/dict.c     hash table keyspace with lazy + periodic TTL sweep
-include/dict.h keyspace API
-tests/test_minikv.py  stdlib-only RESP2 integration tests
+.
+├── nexora/            # NEXORA web app (Next.js + Supabase)
+│   ├── app/           # App Router routes (/home /global /friends /messages /admin …)
+│   ├── components/    # UI primitives + feature components
+│   ├── lib/           # data access, guards, validation, level math, frames
+│   └── supabase/      # SQL migrations (schema, RLS, triggers)
+├── src/  include/     # mini-kv C sources + headers
+├── tests/             # mini-kv integration tests
+├── docs/              # additional documentation (mini-kv.md)
+├── Makefile           # mini-kv build
+└── README.md          # you are here
 ```
 
-Single-threaded epoll loop with non-blocking sockets; replies are buffered per
-client and flushed with `EPOLLOUT` when needed. `EPOLLRDHUP` handles half-closes.
+## Workflow & quality gates
 
-## Roadmap
+NEXORA changes must pass before commit:
 
-- [ ] AOF (append-only file) persistence + `BGSAVE`-style snapshot
-- [ ] `INCR` / `DECR` / `INCRBY` and counter semantics
-- [ ] Lists (`LPUSH`/`RPOP`) and sets (`SADD`/`SMEMBERS`)
-- [ ] Lazy expiry sampling tuning, `maxmemory` with LRU eviction
-- [ ] `mini-benchmark` mode + perf comparison vs real Redis
-- [ ] Optional TLS and AUTH password
-- [ ] Pub/Sub
+```bash
+cd nexora
+npx tsc --noEmit    # typecheck
+npm run lint        # ESLint
+npm test            # Vitest
+npm run build       # production build
+```
 
-## Status
+mini-kv must pass: `make && ./tests/test_minikv.py`
 
-v0.1.0 — string commands only, single logical database, no persistence yet.
+No secrets in git — `.env.local` is gitignored and the `service_role` key never appears in this repo or in any `NEXT_PUBLIC_*` variable.
+
+## License / provenance
+
+All artwork in `nexora/` is generated in-repo or CC0-built; see [`nexora/ASSET_CREDITS.md`](nexora/ASSET_CREDITS.md). The app contains no third-party AI-generated art.

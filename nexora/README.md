@@ -4,8 +4,8 @@ A dark, premium social platform stitched into a shared pixel-art world: profiles
 achievements — and, in later phases, real-time chat, friends, communities, a walkable world and
 legendary fishing.
 
-**Status: Phase 1 (Identity & RBAC) — live.** Phases 2–5 (social, world, fishing, moderation) are
-roadmapped below and marked in-app with honest "in development" notices, not fake controls.
+**Status: Phase 1 + P2 friends & DMs — live.** Discover and Communities are roadmapped below and
+marked in-app with honest "in development" notices, not fake controls.
 
 ## Stack
 
@@ -40,7 +40,7 @@ Required env vars (see `.env.example`):
 | `npm run build` | Production build |
 | `npm run start` | Serve the production build |
 | `npm run lint` | ESLint |
-| `npm run test` | Vitest unit tests |
+| `npm run test` | Vitest unit tests (30) |
 | `python3 tools/generate_assets.py` | Regenerate all pixel-art assets |
 
 ## What works today (Phase 1)
@@ -64,7 +64,8 @@ Required env vars (see `.env.example`):
 
 ## Not yet shipped (roadmapped, honestly labeled in-app)
 
-- **P2** — Friends, real-time chat (Supabase Realtime), communities, discover, notifications
+- **P2 (partial, live)** — Friends, real-time DMs, island-wide global chat (`/global`) are live.
+  Still ahead: communities, discover, notifications
 - **P3** — Phaser pixel world (Plaza, Beach, Pier, Forest Lake, Garden, Arcade City), co-op sync
 - **P4** — Fishing (25+ species, rods/bait), inventory, coins economy (no real money)
 - **P5** — Mini-games, full moderation queues, admin role-granting with typed confirmation
@@ -77,12 +78,20 @@ Key objects: `profiles`, `achievements`, `user_achievements`, `audit_log`,
 `handle_new_user` (owner bootstrap), `guard_profile_columns` (privilege-escalation guard with a
 trusted-context bypass for server code), `award_achievement`, `complete_profile_check`.
 
-Note: `mailer_autoconfirm` is currently **enabled** on the project because no custom SMTP is
-configured yet — signups get a session immediately. Configure SMTP + re-enable confirmation before
-public launch.
+Schema now lives in `supabase/migrations/*.sql` (`p2_social_schema` adds friendships,
+conversations, messages + RLS/guards). Note: `mailer_autoconfirm` is currently **enabled** on the
+project because no custom SMTP is configured yet — signups get a session immediately. Configure SMTP
++ re-enable confirmation before public launch.
 
 ## Deployment
 
 Deploy on Vercel with **root directory = `nexora`** and the env vars above. The app binds to the
 platform port via `next start`. See `docs/NEXORA_SPEC.md` for the full product spec and
 `ASSET_CREDITS.md` for artwork provenance (all art is generated in-repo).
+
+### Cosmetics & global chat (2026-11-22, post-P2 add-on)
+- **Profile frames** — 8 level-gated avatar decorations (Clean Cut → Celestial Halo), pure CSS, server-enforced unlocks via `updateFrameAction` (`lib/frames.ts`).
+- **Registration avatars** — sign up requires picking a bundled avatar or uploading your own (PNG/JPEG/WebP/GIF, ≤ 2 MB, served from the `avatars` storage bucket with own-folder RLS).
+- **Staff badges** — moderator/admin/owner badges now carry icons, a soft glow and a shimmer sweep (`components/ui/badge.tsx`).
+- **Global chat** — `/global`, a single island-wide channel with a Discord-style UI synced live over Supabase Realtime (INSERT/DELETE propagate instantly), server-side 30 msg/min rate limit, staff can delete any message (`global_messages` table + RLS).
+- **Feed-first Home** — `/home` opens on the island's pulse (global chatter, realm achievements, your party, fresh faces) with a compact identity strip; the full showcase stays on `/profile`.

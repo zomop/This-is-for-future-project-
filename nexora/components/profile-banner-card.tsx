@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Coins, CalendarDays, Flame } from "lucide-react";
+import { FramedAvatar } from "@/components/framed-avatar";
 import { cn } from "@/lib/utils";
 import { levelProgress } from "@/lib/level";
 import { RoleBadge } from "@/components/ui/badge";
@@ -58,14 +59,16 @@ export function ProfileBannerCard({
       <div className="relative px-5 pb-5 sm:px-7">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="flex items-end gap-4">
-            <Image
-              src={profile.avatar_url}
-              alt="Avatar"
-              width={104}
-              height={104}
-              priority
-              className="pixelated -mt-12 h-24 w-24 rounded-full border-4 border-panel bg-panel2 object-cover sm:-mt-14 sm:h-28 sm:w-28"
-            />
+            <span className="-mt-12 sm:-mt-14">
+              <FramedAvatar
+                src={profile.avatar_url}
+                alt="Avatar"
+                size={104}
+                frame={profile.frame_slug}
+                priority
+                className="border-4 border-panel bg-panel2"
+              />
+            </span>
             <div className="pb-1">
               <h1 className="text-xl font-extrabold leading-tight text-foreground sm:text-2xl">
                 {profile.display_name}
