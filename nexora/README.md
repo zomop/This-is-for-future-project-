@@ -4,7 +4,8 @@ A dark, premium social platform stitched into a shared pixel-art world: profiles
 achievements — and, in later phases, real-time chat, friends, communities, a walkable world and
 legendary fishing.
 
-**Status: Phase 1 + P2 friends, DMs, global chat & Discover — live.** Communities is roadmapped below and
+**Status: Phase 1 + Phase 2 — live** (friends, DMs, global chat, Discover, Communities).
+Notifications remain; Phase 3+ features are roadmapped below and
 marked in-app with honest "in development" notices, not fake controls.
 
 ## Stack
@@ -40,7 +41,7 @@ Required env vars (see `.env.example`):
 | `npm run build` | Production build |
 | `npm run start` | Serve the production build |
 | `npm run lint` | ESLint |
-| `npm run test` | Vitest unit tests (42) |
+| `npm run test` | Vitest unit tests (52) |
 | `python3 tools/generate_assets.py` | Regenerate all pixel-art assets |
 
 ## What works today (Phase 1)
@@ -64,8 +65,9 @@ Required env vars (see `.env.example`):
 
 ## Not yet shipped (roadmapped, honestly labeled in-app)
 
-- **P2 (partial, live)** — Friends, real-time DMs, island-wide global chat (`/global`), Discover
-  (people search, weekly-XP trending, newest members) are live. Still ahead: communities, notifications
+- **P2 (live)** — Friends, real-time DMs, island-wide global chat (`/global`), Discover
+  (people search, weekly-XP trending, newest members), Communities (public/invite-only, live
+  community chat, owner/moderator roles, invite links). Still ahead: notifications
 - **P3** — Phaser pixel world (Plaza, Beach, Pier, Forest Lake, Garden, Arcade City), co-op sync
 - **P4** — Fishing (25+ species, rods/bait), inventory, coins economy (no real money)
 - **P5** — Mini-games, full moderation queues, admin role-granting with typed confirmation

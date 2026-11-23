@@ -32,13 +32,15 @@ A dark-fantasy social identity layer for a small online island community — thi
 - **Friends & DMs** (`/friends`, `/messages`) — requests, accept/decline, 1-on-1 conversations with realtime delivery
 - **Global chat** (`/global`) — `#the-island`, Discord-style channel UI, synced live over Supabase Realtime, server-side 30 msg/min rate limit, staff delete any message
 - **Discover** (`/discover`) — people search (username/display name), trending this week by XP earned, newest members, one-click friend requests
+- **Communities** (`/communities`, `/join/[code]`) — create public/invite-only communities, per-community live chat with role-colored names, community owner + moderator roles, kick/promote, shareable invite links, member management
+- **Animated pixel banners** — hand-coded SVG pixel art (island / sunset / night / arcade scenes, drifting clouds, rolling waves, twinkling stars, bouncing slime) — code-generated in-repo, no AI art
 - **Privacy by default** — usernames are never derived from signup emails (accounts auto-name as `traveler_0001`-style), no email is ever rendered anywhere in the UI, login/reset flows don't reveal whether an email is registered
 - **Staff console** (`/admin`) — member census, role list, audit log (moderator+)
 - Required profile picture at signup (bundled pixel avatars or upload to own-folder storage with RLS)
 
 ### In development (honestly labeled in-app — never fake controls)
 
-- **Communities** — roadmapped for P2, not started
+- **Notifications** — bell + Realtime toasts (last open P2 piece)
 - **P3** — Phaser pixel World (Plaza, Beach, Pier, Forest Lake, Garden, Arcade)
 - **P4** — Legendary fishing (species, rods, bait, inventory, coins economy)
 - **P5** — Mini-games, full moderation queues

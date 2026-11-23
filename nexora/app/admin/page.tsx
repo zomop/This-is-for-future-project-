@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ShieldAlert, Users, ScrollText } from "lucide-react";
+import { Users, ScrollText } from "lucide-react";
 import { requireProfile } from "@/lib/guard";
 import { AppShell } from "@/components/app-shell";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,9 +43,6 @@ export default async function AdminPage() {
           <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-gold">Staff console</p>
           <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-foreground">Moderation &amp; roles</h1>
         </div>
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-golddim/60 bg-[#241c0c] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-gold">
-          <ShieldAlert size={12} /> Phase 1 preview
-        </span>
       </div>
 
       {/* role census */}
@@ -131,7 +128,7 @@ export default async function AdminPage() {
 
       <p className="mt-5 text-[11px] leading-relaxed text-muted">
         Phase 5 will add: role grants and bans with typed confirmation, report queues, AI output
-        review, cache purge and deployment status. This read-only view ships in Phase 1.
+        review, cache purge and deployment status. This read-only view is live.
       </p>
     </AppShell>
   );

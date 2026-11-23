@@ -111,3 +111,54 @@ export interface GlobalMessageWithSender extends GlobalMessage {
   /** null when the sender's profile is not visible to the viewer (RLS). */
   sender: GlobalMessageSender | null;
 }
+
+// ============ Communities ============
+
+export type CommunityRole = "owner" | "moderator" | "member";
+export type BannerVariant = "island" | "sunset" | "night" | "arcade";
+
+export interface Community {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  emoji: string;
+  banner_variant: BannerVariant;
+  is_public: boolean;
+  created_by: string;
+  created_at: string;
+}
+
+export interface CommunityWithMeta extends Community {
+  memberCount: number;
+  /** Null when the viewer is not a member. */
+  myRole: CommunityRole | null;
+}
+
+export interface CommunityMessage {
+  id: string;
+  community_id: string;
+  sender_id: string;
+  body: string;
+  created_at: string;
+}
+
+export interface CommunityMessageWithSender extends CommunityMessage {
+  /** null when the sender's profile is not visible to the viewer (RLS). */
+  sender: GlobalMessageSender | null;
+}
+
+export interface CommunityMemberRow {
+  role: CommunityRole;
+  joined_at: string;
+  profile: Profile;
+}
+
+export interface CommunityInvite {
+  code: string;
+  community_id: string;
+  created_by: string;
+  created_at: string;
+  max_uses: number | null;
+  uses: number;
+}
