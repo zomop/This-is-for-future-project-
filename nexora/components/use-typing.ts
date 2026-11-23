@@ -25,17 +25,26 @@ export function useTyping(topic: string, meId: string, myName: string) {
   const channelRef = useRef<ReturnType<ReturnType<typeof createClient>["channel"]> | null>(null);
   const lastSentRef = useRef(0);
 
-  // Join the broadcast channel and prune stale typers.
+  // Join the broadcast channel and prune stale typers. The topic is shared
+  // across users on purpose (it is the broadcast route), so it cannot be
+  // uniquified per instance — but supabase-js reuses an existing channel for a
+  // duplicate topic and throws on `.on()` after `subscribe()`. A stray second
+  // local subscriber must degrade (no indicator), never crash the page.
   useEffect(() => {
     const supabase = createClient();
-    const channel = supabase
-      .channel(`${topic}:typing`)
-      .on("broadcast", { event: "typing" }, ({ payload }) => {
-        const { userId, name } = (payload ?? {}) as { userId?: string; name?: string };
-        if (!userId || userId === meId || !name) return;
-        setTypers((prev) => ({ ...prev, [userId]: { name, at: Date.now() } }));
-      })
-      .subscribe();
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    try {
+      channel = supabase
+        .channel(`${topic}:typing`)
+        .on("broadcast", { event: "typing" }, ({ payload }) => {
+          const { userId, name } = (payload ?? {}) as { userId?: string; name?: string };
+          if (!userId || userId === meId || !name) return;
+          setTypers((prev) => ({ ...prev, [userId]: { name, at: Date.now() } }));
+        })
+        .subscribe();
+    } catch {
+      channel = null;
+    }
     channelRef.current = channel;
 
     const prune = setInterval(() => {
@@ -54,7 +63,7 @@ export function useTyping(topic: string, meId: string, myName: string) {
     return () => {
       clearInterval(prune);
       channelRef.current = null;
-      supabase.removeChannel(channel);
+      if (channel) supabase.removeChannel(channel);
     };
   }, [topic, meId]);
 

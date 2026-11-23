@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { Bell, CheckCheck, Loader2, UserPlus, MessageCircle, Inbox } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -32,6 +32,12 @@ export function NotificationsBell({ meId, className }: { meId: string; className
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const loadedRef = useRef(false);
+  // The bell mounts in several places at once (sidebar, mobile header, mobile
+  // drawer). supabase-js REUSES an existing channel for a duplicate topic and
+  // throws if `.on()` runs after `subscribe()`, so every instance needs its own
+  // topic — same pattern as UnreadBadge. postgres_changes delivery is per
+  // subscription, so a unique topic name is purely local.
+  const uid = useId();
 
   const refresh = useCallback(async () => {
     const res = await getNotificationsAction();
@@ -51,7 +57,7 @@ export function NotificationsBell({ meId, className }: { meId: string; className
   useEffect(() => {
     const supabase = createClient();
     const channel = supabase
-      .channel(`notifications:${meId}`)
+      .channel(`notifications:${meId}:${uid}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "notifications", filter: `user_id=eq.${meId}` },
@@ -63,7 +69,7 @@ export function NotificationsBell({ meId, className }: { meId: string; className
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [meId, refresh]);
+  }, [meId, uid, refresh]);
 
   return (
     <div className={cn("relative", className)}>
