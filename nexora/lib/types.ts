@@ -16,6 +16,7 @@ export interface Profile {
   status: string;
   avatar_url: string;
   banner_url: string;
+  frame_slug: string;
   privacy: Privacy;
   role: AppRole;
   xp: number;
@@ -89,4 +90,21 @@ export interface ConversationSummary {
   peer: Profile;
   lastMessage: Pick<Message, "body" | "sender_id" | "created_at"> | null;
   unreadCount: number;
+}
+
+export interface GlobalMessage {
+  id: string;
+  sender_id: string;
+  body: string;
+  created_at: string;
+}
+
+export type GlobalMessageSender = Pick<
+  Profile,
+  "id" | "username" | "display_name" | "avatar_url" | "frame_slug" | "role"
+>;
+
+export interface GlobalMessageWithSender extends GlobalMessage {
+  /** null when the sender's profile is not visible to the viewer (RLS). */
+  sender: GlobalMessageSender | null;
 }

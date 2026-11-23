@@ -87,3 +87,9 @@ project because no custom SMTP is configured yet — signups get a session immed
 Deploy on Vercel with **root directory = `nexora`** and the env vars above. The app binds to the
 platform port via `next start`. See `docs/NEXORA_SPEC.md` for the full product spec and
 `ASSET_CREDITS.md` for artwork provenance (all art is generated in-repo).
+
+### Cosmetics & global chat (2026-11-22, post-P2 add-on)
+- **Profile frames** — 8 level-gated avatar decorations (Clean Cut → Celestial Halo), pure CSS, server-enforced unlocks via `updateFrameAction` (`lib/frames.ts`).
+- **Registration avatars** — sign up requires picking a bundled avatar or uploading your own (PNG/JPEG/WebP/GIF, ≤ 2 MB, served from the `avatars` storage bucket with own-folder RLS).
+- **Staff badges** — moderator/admin/owner badges now carry icons, a soft glow and a shimmer sweep (`components/ui/badge.tsx`).
+- **Global chat** — `/global`, a single island-wide channel synced live over Supabase Realtime (INSERT/DELETE propagate instantly), server-side 30 msg/min rate limit, staff can delete any message (`global_messages` table + RLS).

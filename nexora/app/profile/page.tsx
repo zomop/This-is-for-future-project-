@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { ExternalLink, Trophy, Lock } from "lucide-react";
+import { ExternalLink, Trophy, Lock, Frame } from "lucide-react";
 import { requireProfile } from "@/lib/guard";
 import { AppShell } from "@/components/app-shell";
 import { ProfileBannerCard } from "@/components/profile-banner-card";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProfileForm } from "./profile-form";
+import { FramePicker } from "@/components/frame-picker";
 import { getEarnedAchievements, getAllAchievements } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -37,6 +38,16 @@ export default async function ProfilePage() {
       </div>
 
       <ProfileBannerCard profile={profile} achievementCount={earned.length} />
+
+      <Card className="mt-5">
+        <CardHeader className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2"><Frame size={13} /> Profile frame</CardTitle>
+          <span className="text-[11px] font-semibold text-muted">Level-gated decorations</span>
+        </CardHeader>
+        <div className="p-5 sm:p-6">
+          <FramePicker profile={profile} />
+        </div>
+      </Card>
 
       <Card className="mt-5">
         <CardHeader>

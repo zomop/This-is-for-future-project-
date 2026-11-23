@@ -21,6 +21,7 @@ describe("registerSchema", () => {
       displayName: "Andi",
       email: "andi@example.com",
       password: "supersecret",
+      avatar_url: "/avatars/knight.png",
     });
     expect(r.success).toBe(true);
   });
@@ -111,5 +112,23 @@ describe("friendUsernameSchema", () => {
     for (const bad of ["a", "a b", "x!", "this_is_a_very_long_username_value"]) {
       expect(friendUsernameSchema.safeParse({ username: bad }).success).toBe(false);
     }
+  });
+});
+
+describe("avatar uploads", () => {
+  it("accepts a public storage avatar URL", () => {
+    const r = profileSchema.safeParse({
+      ...validProfile,
+      avatar_url:
+        "https://xioxbvmacewkpjtftqbb.supabase.co/storage/v1/object/public/avatars/some-user/avatar-1.png",
+    });
+    expect(r.success).toBe(true);
+  });
+  it("rejects avatar URLs outside the storage bucket", () => {
+    const r = profileSchema.safeParse({
+      ...validProfile,
+      avatar_url: "https://evil.example.com/pixel.png",
+    });
+    expect(r.success).toBe(false);
   });
 });

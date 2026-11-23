@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { loginSchema, registerSchema, passwordSchema } from "@/lib/validations";
+import { uploadAvatar, avatarFileFrom, deleteStaleAvatars } from "@/lib/avatar-upload";
 import { z } from "zod";
 
 export interface FormState {
@@ -24,16 +25,20 @@ export async function signUpAction(
     displayName: formData.get("displayName"),
     email: formData.get("email"),
     password: formData.get("password"),
+    avatar_url: formData.get("avatar_url"),
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
+  const avatarFile = avatarFileFrom(formData);
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
-    options: { data: { display_name: parsed.data.displayName } },
+    options: {
+      data: { display_name: parsed.data.displayName, avatar_url: parsed.data.avatar_url },
+    },
   });
   if (error) {
     if (error.message.toLowerCase().includes("already")) {
@@ -42,7 +47,27 @@ export async function signUpAction(
     return { error: error.message };
   }
   if (!data.session) {
-    return { notice: "Account created. Check your email to confirm, then sign in." };
+    return {
+      notice: avatarFile
+        ? "Account created. Check your email to confirm — your uploaded avatar will apply after you sign in and set it in your profile."
+        : "Account created. Check your email to confirm, then sign in.",
+    };
+  }
+
+  // Custom avatar upload (best effort — the account itself is already created).
+  if (avatarFile && data.user) {
+    const uploaded = await uploadAvatar(data.user.id, avatarFile);
+    if (uploaded.url) {
+      const { error: upErr } = await supabase
+        .from("profiles")
+        .update({ avatar_url: uploaded.url })
+        .eq("id", data.user.id);
+      if (!upErr) await deleteStaleAvatars(data.user.id, uploaded.url);
+    } else {
+      return {
+        notice: `Account created, but your image upload failed (${uploaded.error}). Set your avatar on the profile page after signing in.`,
+      };
+    }
   }
   redirect("/home");
 }

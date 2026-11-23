@@ -1,5 +1,6 @@
 import Link from "next/link";
-import Image from "next/image";
+import { FramedAvatar } from "@/components/framed-avatar";
+import { RoleBadge } from "@/components/ui/badge";
 import { Users, Inbox, Send, UserX } from "lucide-react";
 import { requireProfile } from "@/lib/guard";
 import { AppShell } from "@/components/app-shell";
@@ -102,19 +103,22 @@ function Person({ profile: p }: { profile: import("@/lib/types").Profile }) {
   return (
     <div className="flex min-w-0 flex-1 items-center gap-3">
       <Link href={`/u/${p.username}`} aria-label={`Open ${p.display_name}'s profile`}>
-        <Image
+        <FramedAvatar
           src={p.avatar_url}
           alt=""
-          width={44}
-          height={44}
-          className="pixelated h-11 w-11 rounded-full border border-line object-cover"
+          size={44}
+          frame={p.frame_slug}
+          className="border border-line"
         />
       </Link>
       <div className="min-w-0">
         <Link href={`/u/${p.username}`} className="block truncate text-sm font-bold text-foreground hover:text-accent">
           {p.display_name}
         </Link>
-        <p className="truncate text-[11px] text-muted">@{p.username}</p>
+        <div className="mt-0.5 flex items-center gap-1.5">
+          <p className="truncate text-[11px] text-muted">@{p.username}</p>
+          {p.role !== "member" && p.role !== "guest" && <RoleBadge role={p.role} />}
+        </div>
       </div>
     </div>
   );

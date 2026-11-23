@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
   Home,
   MessageSquare,
   Users,
+  Globe,
   UsersRound,
   Compass,
   Map,
@@ -25,12 +25,14 @@ import { cn } from "@/lib/utils";
 import { levelProgress } from "@/lib/level";
 import { signOutAction } from "@/lib/actions/auth";
 import { UnreadBadge } from "@/components/unread-badge";
+import { FramedAvatar } from "@/components/framed-avatar";
 import type { Profile } from "@/lib/types";
 
 const NAV = [
   { href: "/home", label: "Home", icon: Home, phase: 0 },
   { href: "/messages", label: "Messages", icon: MessageSquare, phase: 0 },
   { href: "/friends", label: "Friends", icon: Users, phase: 0 },
+  { href: "/global", label: "Global", icon: Globe, phase: 0 },
   { href: "/communities", label: "Communities", icon: UsersRound, phase: 2 },
   { href: "/discover", label: "Discover", icon: Compass, phase: 2 },
   { href: "/world", label: "World", icon: Map, phase: 3 },
@@ -166,12 +168,12 @@ export function AppShell({
 
       {/* user row */}
       <div className="flex items-center gap-2.5 border-t border-line px-4 py-3">
-        <Image
+        <FramedAvatar
           src={profile.avatar_url}
           alt="Your avatar"
-          width={38}
-          height={38}
-          className="pixelated h-[38px] w-[38px] rounded-full border border-line object-cover"
+          size={38}
+          frame={profile.frame_slug}
+          className="border border-line"
         />
         <div className="min-w-0 flex-1">
           <p className="truncate text-[13px] font-semibold leading-tight text-foreground">

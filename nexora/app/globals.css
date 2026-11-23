@@ -48,3 +48,96 @@ body {
 .pixelated {
   image-rendering: pixelated;
 }
+
+/* ===== profile frames (avatar decorations) ===== */
+@keyframes frame-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes frame-breathe {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+@keyframes frame-halo {
+  0%, 100% { box-shadow: 0 0 10px 1px rgba(255, 244, 196, 0.35), 0 0 26px 6px rgba(232, 193, 90, 0.18); }
+  50% { box-shadow: 0 0 16px 4px rgba(255, 244, 196, 0.6), 0 0 40px 12px rgba(232, 193, 90, 0.3); }
+}
+
+.fr {
+  position: absolute;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+.fr::before {
+  content: "";
+  position: absolute;
+  inset: -60%;
+  border-radius: 9999px;
+}
+
+.fr-azure::before {
+  background: conic-gradient(from 0deg, #0e3a4d, #41d4f4, #c8f6ff, #41d4f4, #0e3a4d);
+  animation: frame-spin 6s linear infinite;
+}
+.fr-azure { box-shadow: 0 0 12px rgba(65, 212, 244, 0.4); }
+
+.fr-verdant::before {
+  background: radial-gradient(circle at 50% 50%, #10341f, #1d6a44 52%, #57d99a 78%, #123b27);
+  animation: frame-breathe 3.4s ease-in-out infinite;
+}
+.fr-verdant { box-shadow: 0 0 12px rgba(87, 217, 154, 0.38); }
+
+.fr-ember::before {
+  background: conic-gradient(from 0deg, #3a120a, #f2695c, #ffc46b, #ff8f5c, #f2695c, #3a120a);
+  animation: frame-spin 4.5s linear infinite;
+}
+.fr-ember { box-shadow: 0 0 14px rgba(242, 105, 92, 0.45); }
+
+.fr-royal::before {
+  background: conic-gradient(from 0deg, #2a1040, #a78bfa, #e8c15a, #c084fc, #a78bfa, #2a1040);
+  animation: frame-spin 6.5s linear infinite;
+}
+.fr-royal { box-shadow: 0 0 14px rgba(167, 139, 250, 0.45); }
+
+.fr-aurora::before {
+  background: conic-gradient(from 0deg, #0c2b33, #41f4c8, #41d4f4, #c084fc, #7df0e0, #0c2b33);
+  animation: frame-spin 9s linear infinite;
+}
+.fr-aurora { box-shadow: 0 0 14px rgba(65, 244, 200, 0.4); }
+
+.fr-solar::before {
+  background: conic-gradient(from 0deg, #4d3208, #e8c15a, #fff6cf, #ffd76a, #e8c15a, #4d3208);
+  animation: frame-spin 5s linear infinite;
+}
+.fr-solar { box-shadow: 0 0 16px rgba(232, 193, 90, 0.5); }
+
+.fr-celestial::before {
+  background: conic-gradient(from 0deg, #16203a, #ffffff, #ffe98a, #bcd6ff, #ffffff, #16203a);
+  animation: frame-spin 8s linear infinite;
+}
+.fr-celestial { animation: frame-halo 3.6s ease-in-out infinite; }
+
+/* ===== staff badge shimmer ===== */
+@keyframes badge-shine {
+  0% { transform: translateX(-160%) skewX(-20deg); }
+  55%, 100% { transform: translateX(260%) skewX(-20deg); }
+}
+.badge-shine {
+  position: relative;
+  overflow: hidden;
+}
+.badge-shine::after {
+  content: "";
+  position: absolute;
+  top: -25%;
+  bottom: -25%;
+  width: 45%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  animation: badge-shine 3.1s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fr::before, .fr-celestial, .badge-shine::after {
+    animation: none;
+  }
+}

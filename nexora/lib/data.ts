@@ -4,6 +4,9 @@ import type {
   AuditEntry,
   ConversationSummary,
   EarnedAchievement,
+  GlobalMessage,
+  GlobalMessageSender,
+  GlobalMessageWithSender,
   Message,
   Profile,
 } from "@/lib/types";
@@ -25,7 +28,7 @@ export async function getMyProfile(): Promise<Profile | null> {
   const { data, error } = await supabase
     .from("profiles")
     .select(
-      "id, username, display_name, bio, status, avatar_url, banner_url, privacy, role, xp, coins, created_at"
+      "id, username, display_name, bio, status, avatar_url, banner_url, frame_slug, privacy, role, xp, coins, created_at"
     )
     .eq("id", user.id)
     .maybeSingle();
@@ -40,7 +43,7 @@ export async function getProfileByUsername(
   const { data, error } = await supabase
     .from("profiles")
     .select(
-      "id, username, display_name, bio, status, avatar_url, banner_url, privacy, role, xp, coins, created_at"
+      "id, username, display_name, bio, status, avatar_url, banner_url, frame_slug, privacy, role, xp, coins, created_at"
     )
     .ilike("username", username)
     .maybeSingle();
@@ -82,7 +85,7 @@ export function memberMonths(createdAt: string): number {
 // ============ P2: friends & messages ============
 
 const PROFILE_COLS =
-  "id, username, display_name, bio, status, avatar_url, banner_url, privacy, role, xp, coins, created_at";
+  "id, username, display_name, bio, status, avatar_url, banner_url, frame_slug, privacy, role, xp, coins, created_at";
 
 export interface FriendsOverview {
   /** Accepted friends with their profiles. */
@@ -271,4 +274,32 @@ export async function getAllAchievements(): Promise<Achievement[]> {
     .order("xp_reward", { ascending: true });
   if (error) throw new Error(`Failed to load achievements: ${error.message}`);
   return (data ?? []) as Achievement[];
+}
+
+// ============ Global chat ============
+
+const GLOBAL_SENDER_COLS = "id, username, display_name, avatar_url, frame_slug, role";
+
+export async function getGlobalMessages(limit = 120): Promise<GlobalMessageWithSender[]> {
+  const supabase = await createClient();
+  const { data: rows, error } = await supabase
+    .from("global_messages")
+    .select("id, sender_id, body, created_at")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) throw new Error(`Failed to load global chat: ${error.message}`);
+  const messages = ((rows ?? []) as GlobalMessage[]).reverse();
+
+  const senderIds = [...new Set(messages.map((m) => m.sender_id))];
+  let senderById = new Map<string, GlobalMessageSender>();
+  if (senderIds.length > 0) {
+    const { data: senders } = await supabase
+      .from("profiles")
+      .select(GLOBAL_SENDER_COLS)
+      .in("id", senderIds);
+    senderById = new Map(
+      (senders ?? []).map((p) => [p.id as string, p as unknown as GlobalMessageSender])
+    );
+  }
+  return messages.map((m) => ({ ...m, sender: senderById.get(m.sender_id) ?? null }));
 }

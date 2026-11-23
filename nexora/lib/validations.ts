@@ -7,6 +7,15 @@ export const AVATAR_PATHS = [
   "/avatars/knight.png",
 ] as const;
 
+/** Public URLs of user uploads in the `avatars` storage bucket. */
+export const UPLOADED_AVATAR_RE =
+  /^https:\/\/[^/\s]+\/storage\/v1\/object\/public\/avatars\/[A-Za-z0-9_\-\/.]+$/;
+
+export const avatarUrlSchema = z.union([
+  z.enum(AVATAR_PATHS),
+  z.string().regex(UPLOADED_AVATAR_RE, "Avatar must be a default avatar or an uploaded image"),
+]);
+
 export const registerSchema = z.object({
   displayName: z
     .string()
@@ -18,6 +27,7 @@ export const registerSchema = z.object({
     .string()
     .min(8, "Password must be at least 8 characters")
     .max(72, "Password must be at most 72 characters"),
+  avatar_url: z.enum(AVATAR_PATHS),
 });
 
 export const loginSchema = z.object({
@@ -38,7 +48,7 @@ export const profileSchema = z.object({
     .max(48, "Display name must be at most 48 characters"),
   bio: z.string().trim().max(280, "Bio must be at most 280 characters"),
   status: z.string().trim().max(80, "Status must be at most 80 characters"),
-  avatar_url: z.enum(AVATAR_PATHS),
+  avatar_url: avatarUrlSchema,
   privacy: z.enum(["public", "friends", "private"]),
 });
 
@@ -66,4 +76,11 @@ export const friendUsernameSchema = z.object({
     .trim()
     .toLowerCase()
     .regex(/^[a-z0-9_]{3,24}$/, "3–24 chars: lowercase letters, numbers, underscores"),
+});
+export const globalMessageSchema = z.object({
+  body: z
+    .string()
+    .trim()
+    .min(1, "Message cannot be empty")
+    .max(500, "Global messages are capped at 500 characters"),
 });

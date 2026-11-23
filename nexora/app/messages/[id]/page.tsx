@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { FramedAvatar } from "@/components/framed-avatar";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { requireProfile } from "@/lib/guard";
@@ -31,12 +31,12 @@ export default async function ConversationPage({
             <span className="block text-[13px] font-bold leading-tight text-foreground">{detail.peer.display_name}</span>
             <span className="block text-[11px] text-muted">@{detail.peer.username}</span>
           </span>
-          <Image
+          <FramedAvatar
             src={detail.peer.avatar_url}
             alt=""
-            width={42}
-            height={42}
-            className="pixelated h-[42px] w-[42px] rounded-full border border-line object-cover"
+            size={42}
+            frame={detail.peer.frame_slug}
+            className="border border-line"
           />
         </Link>
       </div>

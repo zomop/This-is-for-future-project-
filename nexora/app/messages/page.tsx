@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { FramedAvatar } from "@/components/framed-avatar";
 import { MessageSquare, Users, ChevronRight } from "lucide-react";
 import { requireProfile } from "@/lib/guard";
 import { AppShell } from "@/components/app-shell";
@@ -48,12 +48,12 @@ export default async function MessagesPage() {
                   href={`/messages/${c.id}`}
                   className="flex items-center gap-3 px-5 py-4 transition-colors hover:bg-white/[0.03]"
                 >
-                  <Image
+                  <FramedAvatar
                     src={c.peer.avatar_url}
                     alt=""
-                    width={48}
-                    height={48}
-                    className="pixelated h-12 w-12 rounded-full border border-line object-cover"
+                    size={48}
+                    frame={c.peer.frame_slug}
+                    className="border border-line"
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-baseline justify-between gap-3">
