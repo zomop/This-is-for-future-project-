@@ -40,7 +40,7 @@ Required env vars (see `.env.example`):
 | `npm run build` | Production build |
 | `npm run start` | Serve the production build |
 | `npm run lint` | ESLint |
-| `npm run test` | Vitest unit tests |
+| `npm run test` | Vitest unit tests (24) |
 | `python3 tools/generate_assets.py` | Regenerate all pixel-art assets |
 
 ## What works today (Phase 1)
@@ -77,9 +77,10 @@ Key objects: `profiles`, `achievements`, `user_achievements`, `audit_log`,
 `handle_new_user` (owner bootstrap), `guard_profile_columns` (privilege-escalation guard with a
 trusted-context bypass for server code), `award_achievement`, `complete_profile_check`.
 
-Note: `mailer_autoconfirm` is currently **enabled** on the project because no custom SMTP is
-configured yet — signups get a session immediately. Configure SMTP + re-enable confirmation before
-public launch.
+Schema now lives in `supabase/migrations/*.sql` (`p2_social_schema` adds friendships,
+conversations, messages + RLS/guards). Note: `mailer_autoconfirm` is currently **enabled** on the
+project because no custom SMTP is configured yet — signups get a session immediately. Configure SMTP
++ re-enable confirmation before public launch.
 
 ## Deployment
 
