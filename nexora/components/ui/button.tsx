@@ -9,7 +9,7 @@ const buttonVariants = cva(
       variant: {
         gold: "bg-gold text-[#241b06] shadow-[0_2px_0_0_#a8843a] hover:bg-[#f4cd72] active:translate-y-[1px] active:shadow-none",
         accent:
-          "bg-accent text-[#062630] shadow-[0_2px_0_0_#176e8a] hover:bg-[#63dcff] active:translate-y-[1px] active:shadow-none",
+          "bg-accent text-[#062630] shadow-[0_2px_0_0_var(--color-accentdim)] hover:brightness-110 active:translate-y-[1px] active:shadow-none",
         outline:
           "border border-line bg-panel2 text-foreground hover:bg-panel3 hover:border-[#34436a]",
         ghost: "text-foreground hover:bg-white/5",

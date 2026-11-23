@@ -29,11 +29,13 @@ A dark-fantasy social identity layer for a small online island community — thi
 - **Feed-first Home** (`/home`) — island activity, realm unlocks, your party (DMs), fresh faces, friends list — not a profile wall
 - Public profiles (`/u/[username]`) with privacy screens (`public` / `friends` / `private`), banner + bio + status + **profile frames** (8 level-gated avatar decorations, server-enforced)
 - XP & levels (200 XP per level), server-awarded achievements, celebration moments
-- **Friends & DMs** (`/friends`, `/messages`) — requests, accept/decline, 1-on-1 conversations with realtime delivery
+- **Friends & DMs** (`/friends`, `/messages`) — requests, accept/decline, 1-on-1 conversations with realtime delivery, **read receipts** ("Seen" + live checkmarks) and **typing indicators** (all chats: DM, global, community)
+- **Notifications** — bell with unread count and dropdown feed (friend requests, DMs), fed by DB triggers, live over Realtime, mark-all-read (RLS-scoped to you)
 - **Global chat** (`/global`) — `#the-island`, Discord-style channel UI, synced live over Supabase Realtime, server-side 30 msg/min rate limit, staff delete any message
 - **Discover** (`/discover`) — people search (username/display name), trending this week by XP earned, newest members, one-click friend requests
 - **Communities** (`/communities`, `/join/[code]`) — create public/invite-only communities, per-community live chat with role-colored names, community owner + moderator roles, kick/promote, shareable invite links, member management
-- **Animated pixel banners** — hand-coded SVG pixel art (island / sunset / night / arcade scenes, drifting clouds, rolling waves, twinkling stars, bouncing slime) — code-generated in-repo, no AI art
+- **Animated pixel banners (GIF-style)** — hand-coded SVG pixel art (field / island / sunset / night / arcade / forest / rain scenes) animated frame-by-frame with stepped timing — drifting clouds, rolling waves, twinkling stars, flapping birds, bouncing slime — code-generated in-repo, no AI art
+- **Design center** (`/settings`) — 6 accent themes + banner picker + profile frame picker, applied instantly; the accent recolors the whole site (buttons, links, bars, glows)
 - **Privacy by default** — usernames are never derived from signup emails (accounts auto-name as `traveler_0001`-style), no email is ever rendered anywhere in the UI, login/reset flows don't reveal whether an email is registered
 - **Staff console** (`/admin`) — member census, role list, audit log (moderator+)
 - Required profile picture at signup (bundled pixel avatars or upload to own-folder storage with RLS)

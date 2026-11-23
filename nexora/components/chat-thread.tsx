@@ -1,9 +1,10 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import { SendHorizontal, Loader2, CheckCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { sendMessageAction, markConversationReadAction, type MessageFormState } from "@/lib/actions/messages";
+import { useTyping } from "@/components/use-typing";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -14,11 +15,13 @@ const initial: MessageFormState = {};
 export function ChatThread({
   conversationId,
   meId,
+  myName,
   peerName,
   initialMessages,
 }: {
   conversationId: string;
   meId: string;
+  myName: string;
   peerName: string;
   initialMessages: Message[];
 }) {
@@ -27,7 +30,16 @@ export function ChatThread({
   const formRef = useRef<HTMLFormElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Live delivery: subscribe to INSERTs on messages for this conversation.
+  // Typing indicator (broadcast pings on this conversation's topic).
+  const { typingNames, notifyTyping } = useTyping(`messages:${conversationId}`, meId, myName);
+
+  // The last message I sent that the peer has opened — the "Seen" marker.
+  const lastReadMineId = useMemo(
+    () => [...messages].reverse().find((m) => m.sender_id === meId && m.read_at)?.id ?? null,
+    [messages, meId]
+  );
+
+  // Live delivery: INSERTs arrive instantly; UPDATEs carry read receipts.
   useEffect(() => {
     const supabase = createClient();
     const channel = supabase
@@ -45,6 +57,19 @@ export function ChatThread({
           setMessages((prev) =>
             prev.some((m) => m.id === row.id) ? prev : [...prev, row]
           );
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "messages",
+          filter: `conversation_id=eq.${conversationId}`,
+        },
+        (payload) => {
+          const row = payload.new as Message;
+          setMessages((prev) => prev.map((m) => (m.id === row.id ? { ...m, ...row } : m)));
         }
       )
       .subscribe();
@@ -105,19 +130,22 @@ export function ChatThread({
                 <p
                   className={cn(
                     "mt-1 flex items-center justify-end gap-1.5 text-[9px] font-semibold uppercase tracking-wider",
-                    mine ? "text-[#0a4a5e]" : "text-muted"
+                    mine ? "text-black/55" : "text-muted"
                   )}
                 >
                   {new Date(m.created_at).toLocaleTimeString("en-GB", {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}
+                  {mine && m.id === lastReadMineId && (
+                    <span className="text-black/70">Seen</span>
+                  )}
                   {mine && (
                     <CheckCheck
                       size={12}
                       strokeWidth={2.2}
                       aria-label={m.read_at ? "Read" : "Sent"}
-                      className={m.read_at ? "text-[#063a4d]" : "text-[#0a4a5e]/60"}
+                      className={m.read_at ? "text-black/70" : "text-black/40"}
                     />
                   )}
                 </p>
@@ -129,25 +157,36 @@ export function ChatThread({
       </div>
 
       {/* composer */}
-      <form
-        ref={formRef}
-        action={formAction}
-        className="flex items-center gap-2 border-t border-line bg-panel px-3 py-3"
-      >
-        <input type="hidden" name="conversationId" value={conversationId} />
-        <Input
-          name="body"
-          autoComplete="off"
-          placeholder={`Message ${peerName}…`}
-          aria-label="Message"
-          maxLength={2000}
-          required
-          className="h-11 rounded-xl"
-        />
+      <div className="border-t border-line bg-panel">
+        <p
+          className="h-5 px-4 pt-1 text-[10px] font-semibold italic text-accent"
+          aria-live="polite"
+        >
+          {typingNames.length > 0
+            ? `${typingNames.join(", ")} ${typingNames.length === 1 ? "is" : "are"} typing…`
+            : ""}
+        </p>
+        <form
+          ref={formRef}
+          action={formAction}
+          className="flex items-center gap-2 px-3 pb-3"
+        >
+          <input type="hidden" name="conversationId" value={conversationId} />
+          <Input
+            name="body"
+            autoComplete="off"
+            placeholder={`Message ${peerName}…`}
+            aria-label="Message"
+            maxLength={2000}
+            required
+            onChange={notifyTyping}
+            className="h-11 rounded-xl"
+          />
         <Button type="submit" variant="accent" size="icon" disabled={pending} aria-label="Send message">
           {pending ? <Loader2 size={17} className="animate-spin" /> : <SendHorizontal size={17} />}
         </Button>
-      </form>
+        </form>
+      </div>
       {state.error && (
         <p role="alert" className="border-t border-line bg-panel px-4 py-2 text-xs text-[#ff9d92]">
           {state.error}

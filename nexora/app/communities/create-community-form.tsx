@@ -129,7 +129,7 @@ export function CreateCommunityForm() {
           type="checkbox"
           name="is_public"
           defaultChecked
-          className="h-4 w-4 accent-[#41d4f4]"
+          className="h-4 w-4 accent-accent"
         />
         <span className="text-[11.5px] text-foreground">
           Public — anyone can find and join it. Uncheck for invite-only.

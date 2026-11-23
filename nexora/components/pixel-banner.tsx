@@ -44,16 +44,29 @@ function WaveLayer({
 }
 
 function Bird({ y, anim }: { y: number; anim: string }) {
+  // Two-frame flap sprite: wings up / wings down swap like GIF frames.
+  // The flight transform lives on the wrapper group so CSS transform
+  // animations never fight SVG transform attributes.
   return (
     <g transform={`translate(0 ${y})`}>
-      <path
-        d="M0 0 l5 -4 l5 4"
-        stroke="#2b4257"
-        strokeWidth={2}
-        fill="none"
-        strokeLinecap="square"
-        className={anim}
-      />
+      <g className={anim}>
+        <path
+          d="M0 0 l5 -4 l5 4"
+          stroke="#2b4257"
+          strokeWidth={2}
+          fill="none"
+          strokeLinecap="square"
+          className="pix-flap-a"
+        />
+        <path
+          d="M0 1 l5 4 l5 -4"
+          stroke="#2b4257"
+          strokeWidth={2}
+          fill="none"
+          strokeLinecap="square"
+          className="pix-flap-b"
+        />
+      </g>
     </g>
   );
 }

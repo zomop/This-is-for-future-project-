@@ -50,7 +50,7 @@ export default async function ProfilePage() {
           </p>
           <Link
             href="/settings"
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-accentdim bg-[#0d2733] px-4 py-2 text-sm font-bold text-accent hover:bg-[#123242]"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-accentdim bg-accent/10 px-4 py-2 text-sm font-bold text-accent hover:bg-accent/20"
           >
             Open design center <ChevronRight size={15} />
           </Link>

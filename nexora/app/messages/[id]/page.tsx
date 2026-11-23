@@ -44,6 +44,7 @@ export default async function ConversationPage({
       <ChatThread
         conversationId={detail.id}
         meId={profile.id}
+        myName={profile.display_name}
         peerName={detail.peer.display_name}
         initialMessages={detail.messages}
       />

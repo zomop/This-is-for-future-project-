@@ -26,6 +26,7 @@ import { levelProgress } from "@/lib/level";
 import { getAccent } from "@/lib/design";
 import { signOutAction } from "@/lib/actions/auth";
 import { UnreadBadge } from "@/components/unread-badge";
+import { NotificationsBell } from "@/components/notifications-bell";
 import { FramedAvatar } from "@/components/framed-avatar";
 import type { Profile } from "@/lib/types";
 
@@ -98,8 +99,9 @@ export function AppShell({
 
   const sidebar = (
     <div className="flex h-full w-[264px] flex-col border-r border-line bg-panel">
-      <div className="flex h-16 items-center border-b border-line px-5">
+      <div className="flex h-16 items-center justify-between border-b border-line px-5">
         <Logo />
+        <NotificationsBell meId={profile.id} />
       </div>
 
       <nav className="flex-1 overflow-y-auto px-3 py-4">
@@ -204,20 +206,25 @@ export function AppShell({
         {
           "--color-accent": accent.accent,
           "--color-accentdim": accent.accentdim,
+          backgroundImage:
+            "radial-gradient(1100px 460px at 88% -80px, color-mix(in srgb, var(--color-accent) 9%, transparent), transparent 72%)",
         } as React.CSSProperties
       }
     >
       {/* mobile top bar */}
       <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-line bg-graphite/85 px-4 backdrop-blur-md md:hidden">
         <Logo />
-        <button
-          onClick={() => setOpen((v) => !v)}
-          aria-label={open ? "Close menu" : "Open menu"}
-          aria-expanded={open}
-          className="rounded-lg border border-line bg-panel2 p-2 text-foreground"
-        >
-          {open ? <X size={18} /> : <Menu size={18} />}
-        </button>
+        <div className="flex items-center gap-2">
+          <NotificationsBell meId={profile.id} />
+          <button
+            onClick={() => setOpen((v) => !v)}
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            className="rounded-lg border border-line bg-panel2 p-2 text-foreground"
+          >
+            {open ? <X size={18} /> : <Menu size={18} />}
+          </button>
+        </div>
       </header>
 
       {/* desktop sidebar */}

@@ -98,6 +98,7 @@ export default async function CommunityPage({
               <CommunityChat
                 communityId={community.id}
                 meId={profile.id}
+                myName={profile.display_name}
                 myRole={community.myRole}
                 memberRoles={memberRoles}
                 initialMessages={messages}

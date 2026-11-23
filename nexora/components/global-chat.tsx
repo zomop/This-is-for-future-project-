@@ -4,6 +4,7 @@ import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import { SendHorizontal, Loader2, Trash2, Globe, ArrowDown } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
+import { useTyping } from "@/components/use-typing";
 import {
   sendGlobalMessageAction,
   deleteGlobalMessageAction,
@@ -67,10 +68,12 @@ function buildRows(messages: GlobalMessageWithSender[]): Row[] {
 
 export function GlobalChat({
   meId,
+  myName,
   myRole,
   initialMessages,
 }: {
   meId: string;
+  myName: string;
   myRole: AppRole;
   initialMessages: GlobalMessageWithSender[];
 }) {
@@ -78,6 +81,7 @@ export function GlobalChat({
   const [state, formAction, pending] = useActionState(sendGlobalMessageAction, initial);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [bodyLength, setBodyLength] = useState(0);
+  const { typingNames, notifyTyping } = useTyping("global-chat", meId, myName);
   const [missed, setMissed] = useState(0);
   const formRef = useRef<HTMLFormElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -329,6 +333,11 @@ export function GlobalChat({
       )}
 
       {/* composer */}
+      <p className="h-5 shrink-0 px-4 pt-1 text-[10px] font-semibold italic text-accent" aria-live="polite">
+        {typingNames.length > 0
+          ? `${typingNames.join(", ")} ${typingNames.length === 1 ? "is" : "are"} typing…`
+          : ""}
+      </p>
       <form ref={formRef} action={formAction} className="shrink-0 border-t border-line bg-panel p-2.5 sm:p-3">
         <div
           className={cn(
@@ -343,7 +352,10 @@ export function GlobalChat({
             placeholder="Message #the-island"
             maxLength={500}
             required
-            onChange={(e) => setBodyLength(e.target.value.length)}
+            onChange={(e) => {
+              setBodyLength(e.target.value.length);
+              notifyTyping();
+            }}
             className="h-12 min-w-0 flex-1 bg-transparent text-[13.5px] text-foreground outline-none placeholder:text-muted"
           />
           <span
