@@ -19,9 +19,9 @@ export const FRAMES: readonly FrameDef[] = [
   { slug: "verdant", name: "Verdant Pulse", description: "The forest breathes with you.", minLevel: 3 },
   { slug: "ember", name: "Ember Wake", description: "Leave sparks wherever you walk.", minLevel: 4 },
   { slug: "royal", name: "Royal Sigil", description: "Violet and gold, fit for the realm's court.", minLevel: 5 },
-  { slug: "aurora", name: "Aurora Veil", description: "A northern sky, wrapped around your face.", minLevel: 7 },
-  { slug: "solar", name: "Solar Crown", description: "Blinding gold. The pier sees you first.", minLevel: 9 },
-  { slug: "celestial", name: "Celestial Halo", description: "Starlight given form. Level 10 legend status.", minLevel: 10 },
+  { slug: "aurora", name: "Aurora Veil", description: "A northern sky, wrapped around your face.", minLevel: 6 },
+  { slug: "solar", name: "Solar Crown", description: "Blinding gold. The pier sees you first.", minLevel: 7 },
+  { slug: "celestial", name: "Celestial Halo", description: "Starlight given form. Maximum prestige.", minLevel: 8 },
 ] as const;
 
 export const FRAME_SLUGS = FRAMES.map((f) => f.slug) as [string, ...string[]];

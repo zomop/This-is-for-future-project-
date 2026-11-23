@@ -10,8 +10,8 @@ describe("profile frames", () => {
 
   it("gates higher frames by level", () => {
     expect(canEquipFrame(1, "celestial")).toBe(false);
-    expect(canEquipFrame(9, "celestial")).toBe(false);
-    expect(canEquipFrame(10, "celestial")).toBe(true);
+    expect(canEquipFrame(7, "celestial")).toBe(false);
+    expect(canEquipFrame(8, "celestial")).toBe(true);
     expect(canEquipFrame(4, "ember")).toBe(true);
     expect(canEquipFrame(3, "ember")).toBe(false);
   });
