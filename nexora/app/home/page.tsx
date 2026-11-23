@@ -127,7 +127,7 @@ export default async function HomePage() {
             </p>
             <ol className="mt-3 space-y-2 text-[12px] leading-snug text-foreground/85">
               <li><span className="font-bold text-accent">P1</span> — Accounts, profiles, roles (live now)</li>
-              <li><span className="font-bold text-muted">P2</span> — Friends, real-time chat, communities</li>
+              <li><span className="font-bold text-accent">P2</span> — Friends &amp; DMs live now; communities &amp; discover next</li>
               <li><span className="font-bold text-muted">P3</span> — The pixel World, multiplayer sync</li>
               <li><span className="font-bold text-muted">P4</span> — Fishing, 25+ species, inventory, coins</li>
               <li><span className="font-bold text-muted">P5</span> — Mini-games, moderation, admin</li>

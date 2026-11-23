@@ -87,3 +87,29 @@ describe("loginSchema / passwordSchema", () => {
     expect(passwordSchema.safeParse({ password: "x".repeat(73) }).success).toBe(false);
   });
 });
+
+import { messageSchema, friendUsernameSchema } from "@/lib/validations";
+
+describe("messageSchema", () => {
+  it("accepts a normal message", () => {
+    expect(messageSchema.safeParse({ body: "hello party" }).success).toBe(true);
+  });
+  it("trims and rejects empty messages", () => {
+    expect(messageSchema.safeParse({ body: "   " }).success).toBe(false);
+  });
+  it("rejects messages over 2000 chars", () => {
+    expect(messageSchema.safeParse({ body: "x".repeat(2001) }).success).toBe(false);
+    expect(messageSchema.safeParse({ body: "x".repeat(2000) }).success).toBe(true);
+  });
+});
+
+describe("friendUsernameSchema", () => {
+  it("accepts and normalizes valid usernames", () => {
+    expect(friendUsernameSchema.parse({ username: "  ANDI_K " }).username).toBe("andi_k");
+  });
+  it("rejects invalid handles", () => {
+    for (const bad of ["a", "a b", "x!", "this_is_a_very_long_username_value"]) {
+      expect(friendUsernameSchema.safeParse({ username: bad }).success).toBe(false);
+    }
+  });
+});

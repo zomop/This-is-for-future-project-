@@ -55,3 +55,15 @@ export const resetRequestSchema = z.object({
 
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type ProfileInput = z.infer<typeof profileSchema>;
+
+export const messageSchema = z.object({
+  body: z.string().trim().min(1, "Message cannot be empty").max(2000, "Message too long (max 2000 chars)"),
+});
+
+export const friendUsernameSchema = z.object({
+  username: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .regex(/^[a-z0-9_]{3,24}$/, "3–24 chars: lowercase letters, numbers, underscores"),
+});

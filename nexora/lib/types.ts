@@ -61,3 +61,32 @@ export const AVATARS = [
 ] as const;
 
 export type AvatarPath = (typeof AVATARS)[number];
+
+export type FriendStatus = "pending" | "accepted" | "declined" | "blocked";
+
+export interface Friendship {
+  id: string;
+  requester_id: string;
+  addressee_id: string;
+  status: FriendStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Message {
+  id: string;
+  conversation_id: string;
+  sender_id: string;
+  body: string;
+  read_at: string | null;
+  created_at: string;
+}
+
+/** Conversation with the peer's (other member's) profile and unread info. */
+export interface ConversationSummary {
+  id: string;
+  last_message_at: string | null;
+  peer: Profile;
+  lastMessage: Pick<Message, "body" | "sender_id" | "created_at"> | null;
+  unreadCount: number;
+}

@@ -28,8 +28,8 @@ import type { Profile } from "@/lib/types";
 
 const NAV = [
   { href: "/home", label: "Home", icon: Home, phase: 0 },
-  { href: "/messages", label: "Messages", icon: MessageSquare, phase: 2 },
-  { href: "/friends", label: "Friends", icon: Users, phase: 2 },
+  { href: "/messages", label: "Messages", icon: MessageSquare, phase: 0 },
+  { href: "/friends", label: "Friends", icon: Users, phase: 0 },
   { href: "/communities", label: "Communities", icon: UsersRound, phase: 2 },
   { href: "/discover", label: "Discover", icon: Compass, phase: 2 },
   { href: "/world", label: "World", icon: Map, phase: 3 },
