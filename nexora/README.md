@@ -88,8 +88,11 @@ project because no custom SMTP is configured yet — signups get a session immed
 ## Deployment
 
 Deploy on Vercel with **root directory = `nexora`** and the env vars above. The app binds to the
-platform port via `next start`. See `docs/NEXORA_SPEC.md` for the full product spec and
-`ASSET_CREDITS.md` for artwork provenance (all art is generated in-repo).
+platform port via `next start`. `vercel.json` pins serverless functions to the **`sin1` (Singapore)**
+region to match the Supabase database region (`ap-southeast-1`) — page renders stay on one
+continent instead of crossing the ocean twice per request. Route-level `loading.tsx` skeletons give
+instant navigation shells while data streams in. See `docs/NEXORA_SPEC.md` for the full product spec
+and `ASSET_CREDITS.md` for artwork provenance (all art is generated in-repo).
 
 ### Cosmetics & global chat (2026-11-22, post-P2 add-on)
 - **Profile frames** — 16 level-gated avatar decorations (Clean Cut → Celestial Halo plus a second wave: Frost Ring, Mono Line, Citrus Punch, Rose Halo, Tide Sweep, Onyx Edge, Nebula Spin, Phoenix Spark), pure CSS, server-enforced unlocks via `updateFrameAction` (`lib/frames.ts`).
